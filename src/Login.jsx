@@ -50,7 +50,7 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
-            <h2 className="text-3xl font-bold text-white text-center">Welcome Back</h2>
+            <h2 className="text-3xl font-bold text-white text-center">Welcome To Siyaram Lace</h2>
             <p className="text-blue-100 text-center mt-2">Sign in to your account</p>
           </div>
           
