@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const ClientList = () => {
   const [savedClients, setSavedClients] = useState([]);
+  const [filteredClients, setFilteredClients] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('all');
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,6 +23,21 @@ const ClientList = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    // Apply filters when savedClients or activeFilter changes
+    applyFilters();
+  }, [savedClients, activeFilter]);
+
+  const applyFilters = () => {
+    if (activeFilter === 'all') {
+      setFilteredClients(savedClients);
+    } else if (activeFilter === 'pending') {
+      setFilteredClients(savedClients.filter(client => client.paymentStatus !== 'cleared'));
+    } else if (activeFilter === 'cleared') {
+      setFilteredClients(savedClients.filter(client => client.paymentStatus === 'cleared'));
+    }
+  };
+
   const fetchClients = async () => {
     setLoading(true);
     try {
@@ -31,7 +48,9 @@ const ClientList = () => {
       }
       
       const data = await response.json();
-      setSavedClients(data);
+      // Sort data by timestamp in descending order (newest first)
+      const sortedData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      setSavedClients(sortedData);
       setError('');
     } catch (err) {
       setError('Error loading client orders. Please try again.');
@@ -72,6 +91,96 @@ const ClientList = () => {
     }
   };
   
+  const clearOrderPayment = async (id) => {
+    if (!window.confirm('Mark this order payment as cleared?')) {
+      return;
+    }
+    
+    try {
+      // Find the client to update
+      const clientToUpdate = savedClients.find(client => client.id === id);
+      if (!clientToUpdate) return;
+      
+      // Update the payment status to cleared
+      const updatedClient = {
+        ...clientToUpdate,
+        paymentStatus: 'cleared',
+        amountPaid: clientToUpdate.grandTotal // Set amount paid to the grand total
+      };
+      
+      const response = await fetch(`https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedClient),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update order payment status');
+      }
+      
+      // Update the UI with the updated order
+      setSavedClients(savedClients.map(client => 
+        client.id === id ? updatedClient : client
+      ));
+    } catch (err) {
+      setError('Failed to clear order payment. Please try again.');
+      console.error(err);
+      
+      // Clear error after 3 seconds
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+  
+  const deleteAllOrders = async () => {
+    if (!window.confirm('Are you sure you want to delete ALL orders? This action cannot be undone.')) {
+      return;
+    }
+    
+    setLoading(true);
+    let hasError = false;
+    
+    try {
+      // Delete each order one by one
+      const deletePromises = savedClients.map(async (client) => {
+        try {
+          const response = await fetch(`https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram/${client.id}`, {
+            method: 'DELETE',
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Failed to delete order ${client.id}`);
+          }
+          return true;
+        } catch (err) {
+          console.error(`Error deleting order ${client.id}:`, err);
+          hasError = true;
+          return false;
+        }
+      });
+      
+      await Promise.all(deletePromises);
+      
+      if (hasError) {
+        setError('Some orders could not be deleted. Please refresh and try again.');
+      } else {
+        // Clear the clients list
+        setSavedClients([]);
+        setFilteredClients([]);
+      }
+    } catch (err) {
+      setError('Failed to delete all orders. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+      // Clear error after 3 seconds if there was one
+      if (hasError) {
+        setTimeout(() => setError(''), 3000);
+      }
+    }
+  };
+  
   const editOrder = (id) => {
     navigate(`/edit/${id}`);
   };
@@ -87,15 +196,62 @@ const ClientList = () => {
               </svg>
               Client Orders
             </h1>
-            <Link 
-              to="/" 
-              className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-blue-200/50 transform hover:-translate-y-0.5 duration-200 font-medium"
+            <div className="flex gap-3">
+              {savedClients.length > 0 && (
+                <button 
+                  onClick={deleteAllOrders}
+                  className="inline-flex items-center justify-center px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-200/50 transform hover:-translate-y-0.5 duration-200 font-medium"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  Delete All
+                </button>
+              )}
+              <Link 
+                to="/" 
+                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-blue-200/50 transform hover:-translate-y-0.5 duration-200 font-medium"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                New Order
+              </Link>
+            </div>
+          </div>
+          
+          {/* Filter options */}
+          <div className="mb-6 flex flex-wrap gap-3 justify-center sm:justify-start">
+            <button
+              onClick={() => setActiveFilter('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                activeFilter === 'all'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+              }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
-              New Order
-            </Link>
+              All Orders ({savedClients.length})
+            </button>
+            <button
+              onClick={() => setActiveFilter('pending')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                activeFilter === 'pending'
+                  ? 'bg-amber-500 text-white shadow-md'
+                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              Pending Payment ({savedClients.filter(client => client.paymentStatus !== 'cleared').length})
+            </button>
+            <button
+              onClick={() => setActiveFilter('cleared')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                activeFilter === 'cleared'
+                  ? 'bg-green-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              Payment Cleared ({savedClients.filter(client => client.paymentStatus === 'cleared').length})
+            </button>
           </div>
           
           {error && (
@@ -122,24 +278,36 @@ const ClientList = () => {
               </div>
               <p className="ml-6 text-lg text-gray-600 font-medium">Loading orders...</p>
             </div>
-          ) : savedClients.length === 0 ? (
+          ) : filteredClients.length === 0 ? (
             <div className="text-center py-20 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border border-white/70 shadow-inner">
               <div className="mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 mx-auto text-blue-400 opacity-75" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-semibold text-gray-700 mb-3">No orders found</h2>
-              <p className="text-gray-500 max-w-lg mx-auto mb-8">You haven't created any orders yet. Get started by creating your first order.</p>
-              <Link 
-                to="/" 
-                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-colors shadow-lg hover:shadow-blue-200/50"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-                </svg>
-                Create First Order
-              </Link>
+              <h2 className="text-2xl font-semibold text-gray-700 mb-3">
+                {savedClients.length === 0 
+                  ? 'No orders found' 
+                  : `No ${activeFilter === 'pending' ? 'pending payment' : activeFilter === 'cleared' ? 'cleared payment' : ''} orders found`}
+              </h2>
+              <p className="text-gray-500 max-w-lg mx-auto mb-8">
+                {savedClients.length === 0 
+                  ? 'You haven\'t created any orders yet. Get started by creating your first order.' 
+                  : activeFilter !== 'all' 
+                    ? `There are no orders with ${activeFilter === 'pending' ? 'pending' : 'cleared'} payment status.`
+                    : 'You haven\'t created any orders yet.'}
+              </p>
+              {savedClients.length === 0 && (
+                <Link 
+                  to="/" 
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-colors shadow-lg hover:shadow-blue-200/50"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                  </svg>
+                  Create First Order
+                </Link>
+              )}
             </div>
           ) : (
             <>
@@ -160,7 +328,7 @@ const ClientList = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {savedClients.map((client, index) => (
+                    {filteredClients.map((client, index) => (
                       <tr 
                         key={client.id} 
                         className={`hover:bg-blue-50/50 border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
@@ -179,7 +347,7 @@ const ClientList = () => {
                           <div className="max-h-24 overflow-y-auto pr-2">
                             {client.products && client.products.length > 0 ? (
                               <ul className="space-y-1.5">
-                                {client.products.map((product, prodIndex) => (
+                                {client.products.slice().reverse().map((product, prodIndex) => (
                                   <li key={prodIndex} className="text-xs flex justify-between">
                                     <span className="font-medium text-gray-700 truncate max-w-[120px]">
                                       {product.name || 'Unnamed Product'}
@@ -228,6 +396,17 @@ const ClientList = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
                             </button>
+                            {client.paymentStatus !== 'cleared' && (
+                              <button 
+                                onClick={() => clearOrderPayment(client.id)}
+                                className="p-1.5 rounded-lg hover:bg-green-100 text-green-600" 
+                                title="Clear Payment"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              </button>
+                            )}
                             <button 
                               onClick={() => deleteOrder(client.id)}
                               className="p-1.5 rounded-lg hover:bg-red-100 text-red-500" 
@@ -247,7 +426,7 @@ const ClientList = () => {
 
               {/* Mobile view - Card format */}
               <div className="md:hidden space-y-4">
-                {savedClients.map((client) => (
+                {filteredClients.map((client) => (
                   <div 
                     key={client.id} 
                     className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100"
@@ -303,7 +482,7 @@ const ClientList = () => {
                           <div className="text-xs text-gray-500 mb-2 font-medium border-b border-gray-200 pb-1">Product List</div>
                           <div className="max-h-32 overflow-y-auto">
                             <ul className="space-y-2">
-                              {client.products.map((product, index) => (
+                              {client.products.slice().reverse().map((product, index) => (
                                 <li key={index} className="flex justify-between items-center text-sm">
                                   <span className="font-medium truncate max-w-[150px] text-gray-800">
                                     {product.name || 'Unnamed Product'}
@@ -339,6 +518,17 @@ const ClientList = () => {
                         </svg>
                         Edit
                       </button>
+                      {client.paymentStatus !== 'cleared' && (
+                        <button 
+                          onClick={() => clearOrderPayment(client.id)}
+                          className="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 rounded-lg text-sm"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Clear
+                        </button>
+                      )}
                       <button 
                         onClick={() => deleteOrder(client.id)}
                         className="inline-flex items-center px-3 py-1 bg-red-50 text-red-700 rounded-lg text-sm"
