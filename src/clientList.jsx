@@ -190,32 +190,34 @@ const ClientList = () => {
       <div className="max-w-7xl mx-auto">
         <div className="backdrop-blur-sm bg-white/80 rounded-2xl shadow-xl p-5 sm:p-8 mb-8 border border-white/50">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 flex items-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <h1 className="text-2xl xs:text-3xl sm:text-4xl font-bold text-gray-800 flex items-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 xs:h-10 xs:w-10 mr-2 xs:mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               Client Orders
             </h1>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               {savedClients.length > 0 && (
                 <button 
                   onClick={deleteAllOrders}
-                  className="inline-flex items-center justify-center px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-200/50 transform hover:-translate-y-0.5 duration-200 font-medium"
+                  className="flex-1 sm:flex-auto inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-200/50 transform hover:-translate-y-0.5 duration-200 font-medium text-sm sm:text-base"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
-                  Delete All
+                  <span className="hidden xs:inline">Delete All</span>
+                  <span className="xs:hidden">Delete</span>
                 </button>
               )}
               <Link 
                 to="/" 
-                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-blue-200/50 transform hover:-translate-y-0.5 duration-200 font-medium"
+                className="flex-1 sm:flex-auto inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-blue-200/50 transform hover:-translate-y-0.5 duration-200 font-medium text-sm sm:text-base"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
-                New Order
+                <span className="hidden xs:inline">New Order</span>
+                <span className="xs:hidden">New</span>
               </Link>
             </div>
           </div>
@@ -230,7 +232,8 @@ const ClientList = () => {
                   : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
               }`}
             >
-              All Orders ({savedClients.length})
+              <span className="hidden xxs:inline">All Orders</span>
+              <span className="xxs:hidden">All</span> ({savedClients.length})
             </button>
             <button
               onClick={() => setActiveFilter('pending')}
@@ -240,7 +243,8 @@ const ClientList = () => {
                   : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
               }`}
             >
-              Pending Payment ({savedClients.filter(client => client.paymentStatus !== 'cleared').length})
+              <span className="hidden xxs:inline">Pending Payment</span>
+              <span className="xxs:hidden">Pending</span> ({savedClients.filter(client => client.paymentStatus !== 'cleared').length})
             </button>
             <button
               onClick={() => setActiveFilter('cleared')}
@@ -250,7 +254,8 @@ const ClientList = () => {
                   : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
               }`}
             >
-              Payment Cleared ({savedClients.filter(client => client.paymentStatus === 'cleared').length})
+              <span className="hidden xxs:inline">Payment Cleared</span>
+              <span className="xxs:hidden">Cleared</span> ({savedClients.filter(client => client.paymentStatus === 'cleared').length})
             </button>
           </div>
           
