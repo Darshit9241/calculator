@@ -11,7 +11,6 @@ const Calculator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState('pending');
   const [amountPaid, setAmountPaid] = useState('');
-  const [billMode, setBillMode] = useState('full');
   
   const handleChange = (id, field, value) => {
     const updatedProducts = products.map(product => {
@@ -50,11 +49,9 @@ const Calculator = () => {
       clientName,
       products,
       grandTotal,
-      // Always include payment information regardless of bill mode
-      paymentStatus: billMode === 'half' ? 'pending' : paymentStatus,
-      amountPaid: billMode === 'half' ? 0 : (amountPaid === '' ? 0 : parseFloat(amountPaid)),
-      timestamp: new Date().getTime(),
-      billMode
+      paymentStatus,
+      amountPaid: amountPaid === '' ? 0 : parseFloat(amountPaid),
+      timestamp: new Date().getTime()
     };
     
     // Show loading status
@@ -167,85 +164,57 @@ const Calculator = () => {
             </div>
           </div>
           
-          {/* Bill Mode Toggle */}
-          <div className="mb-6">
-            <div className="flex justify-center space-x-4">
-              <button
-                onClick={() => setBillMode('full')}
-                className={`px-6 py-3 rounded-xl transition-all duration-300 ${
-                  billMode === 'full' 
-                    ? 'bg-indigo-600 text-white shadow-md' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Full Bill
-              </button>
-              <button
-                onClick={() => setBillMode('half')}
-                className={`px-6 py-3 rounded-xl transition-all duration-300 ${
-                  billMode === 'half' 
-                    ? 'bg-indigo-600 text-white shadow-md' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Half Bill
-              </button>
-            </div>
-          </div>
-          
           {/* Payment status and amount section with improved design */}
-          {billMode === 'full' && (
-            <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100">
-                <label className="block text-gray-700 font-medium mb-3 text-sm">Payment Status</label>
-                <div className="flex gap-6">
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      name="paymentStatus"
-                      value="pending"
-                      checked={paymentStatus === 'pending'}
-                      onChange={() => setPaymentStatus('pending')}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
-                    <span className="ml-3 text-gray-700">Pending</span>
-                  </label>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      name="paymentStatus"
-                      value="cleared"
-                      checked={paymentStatus === 'cleared'}
-                      onChange={() => setPaymentStatus('cleared')}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                    <span className="ml-3 text-gray-700">Cleared</span>
-                  </label>
-                </div>
-              </div>
-              
-              <div className="relative">
-                <input
-                  type="number"
-                  id="amountPaid"
-                  className="block w-full px-4 py-4 border border-gray-300 rounded-xl text-gray-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 peer placeholder-transparent"
-                  value={amountPaid}
-                  onChange={(e) => setAmountPaid(e.target.value)}
-                  placeholder="0.00"
-                  min="0"
-                  step="0.01"
-                />
-                <label 
-                  htmlFor="amountPaid" 
-                  className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-85 top-3 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-85 peer-focus:-translate-y-3 peer-focus:text-indigo-600 bg-white px-1"
-                >
-                  Amount Paid
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100">
+              <label className="block text-gray-700 font-medium mb-3 text-sm">Payment Status</label>
+              <div className="flex gap-6">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentStatus"
+                    value="pending"
+                    checked={paymentStatus === 'pending'}
+                    onChange={() => setPaymentStatus('pending')}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                  <span className="ml-3 text-gray-700">Pending</span>
+                </label>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentStatus"
+                    value="cleared"
+                    checked={paymentStatus === 'cleared'}
+                    onChange={() => setPaymentStatus('cleared')}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                  <span className="ml-3 text-gray-700">Cleared</span>
                 </label>
               </div>
             </div>
-          )}
+            
+            <div className="relative">
+              <input
+                type="number"
+                id="amountPaid"
+                className="block w-full px-4 py-4 border border-gray-300 rounded-xl text-gray-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 peer placeholder-transparent"
+                value={amountPaid}
+                onChange={(e) => setAmountPaid(e.target.value)}
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+              <label 
+                htmlFor="amountPaid" 
+                className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-85 top-3 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-85 peer-focus:-translate-y-3 peer-focus:text-indigo-600 bg-white px-1"
+              >
+                Amount Paid
+              </label>
+            </div>
+          </div>
           
           {/* Products section with improved card design */}
           <div className="bg-white border border-gray-200 rounded-xl shadow-lg mb-8 overflow-hidden">
@@ -255,10 +224,10 @@ const Calculator = () => {
             
             {/* Table header - Only visible on larger screens */}
             <div className="hidden md:grid md:grid-cols-12 md:gap-4 font-semibold text-gray-700 border-b p-4 bg-gray-50">
-              {billMode === 'full' && <div className="col-span-3">Product Name</div>}
-              <div className={billMode === 'full' ? "col-span-2" : "col-span-4"}>Count</div>
-              <div className={billMode === 'full' ? "col-span-2" : "col-span-4"}>Price</div>
-              <div className={billMode === 'full' ? "col-span-3" : "col-span-2"}>Total</div>
+              <div className="col-span-3">Product Name</div>
+              <div className="col-span-2">Count</div>
+              <div className="col-span-2">Price</div>
+              <div className="col-span-3">Total</div>
               <div className="col-span-2">Action</div>
             </div>
             
@@ -267,73 +236,67 @@ const Calculator = () => {
                 <div key={product.id} className="p-4 md:grid md:grid-cols-12 md:gap-4 md:items-center transition-all duration-200 hover:bg-gray-50">
                   {/* Mobile layout - stacked fields with labels */}
                   <div className="md:hidden mb-3">
-                    {billMode === 'full' && (
-                      <div className="mb-3">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
-                        <input
-                          type="text"
-                          className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                          value={product.name}
-                          onChange={(e) => handleChange(product.id, 'name', e.target.value)}
-                          placeholder="Product name"
-                        />
-                      </div>
-                    )}
-                    <div className="mb-3 grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Count</label>
-                        <input
-                          type="number"
-                          className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                          value={product.count}
-                          onChange={(e) => handleChange(product.id, 'count', e.target.value)}
-                          min="0"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
-                        <input
-                          type="number"
-                          className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                          value={product.price}
-                          onChange={(e) => handleChange(product.id, 'price', e.target.value)}
-                          min="0"
-                          step="0.01"
-                        />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                    <input
+                      type="text"
+                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                      value={product.name}
+                      onChange={(e) => handleChange(product.id, 'name', e.target.value)}
+                      placeholder="Product name"
+                    />
+                  </div>
+                  <div className="md:hidden mb-3 grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Count</label>
+                      <input
+                        type="number"
+                        className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                        value={product.count}
+                        onChange={(e) => handleChange(product.id, 'count', e.target.value)}
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+                      <input
+                        type="number"
+                        className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                        value={product.price}
+                        onChange={(e) => handleChange(product.id, 'price', e.target.value)}
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                  </div>
+                  <div className="md:hidden mb-3 flex justify-between items-center">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
+                      <div className="p-3 bg-indigo-50 text-indigo-800 rounded-xl font-medium border border-indigo-100">
+                        ₹ {product.total.toFixed(2)}
                       </div>
                     </div>
-                    <div className="mb-3 flex justify-between items-center">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
-                        <div className="p-3 bg-indigo-50 text-indigo-800 rounded-xl font-medium border border-indigo-100">
-                          ₹ {product.total.toFixed(2)}
-                        </div>
-                      </div>
-                      <button
-                        className="flex items-center p-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all duration-300"
-                        onClick={() => removeProduct(product.id)}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                        Remove
-                      </button>
-                    </div>
+                    <button
+                      className="flex items-center p-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all duration-300"
+                      onClick={() => removeProduct(product.id)}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      Remove
+                    </button>
                   </div>
                   
                   {/* Desktop layout - grid layout */}
-                  {billMode === 'full' && (
-                    <div className="hidden md:block md:col-span-3">
-                      <input
-                        type="text"
-                        className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-                        value={product.name}
-                        onChange={(e) => handleChange(product.id, 'name', e.target.value)}
-                        placeholder="Product name"
-                      />
-                    </div>
-                  )}
-                  <div className={`hidden md:block ${billMode === 'full' ? "md:col-span-2" : "md:col-span-4"}`}>
+                  <div className="hidden md:block md:col-span-3">
+                    <input
+                      type="text"
+                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                      value={product.name}
+                      onChange={(e) => handleChange(product.id, 'name', e.target.value)}
+                      placeholder="Product name"
+                    />
+                  </div>
+                  <div className="hidden md:block md:col-span-2">
                     <input
                       type="number"
                       className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
@@ -342,7 +305,7 @@ const Calculator = () => {
                       min="0"
                     />
                   </div>
-                  <div className={`hidden md:block ${billMode === 'full' ? "md:col-span-2" : "md:col-span-4"}`}>
+                  <div className="hidden md:block md:col-span-2">
                     <input
                       type="number"
                       className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
@@ -352,7 +315,7 @@ const Calculator = () => {
                       step="0.01"
                     />
                   </div>
-                  <div className={`hidden md:block font-medium ${billMode === 'full' ? "md:col-span-3" : "md:col-span-2"}`}>
+                  <div className="hidden md:block md:col-span-3 font-medium">
                     <div className="p-3 bg-indigo-50 text-indigo-800 rounded-xl border border-indigo-100">
                       ₹ {product.total.toFixed(2)}
                     </div>
@@ -421,7 +384,7 @@ const Calculator = () => {
                   <span className="font-bold text-xl text-indigo-700">₹ {grandTotal.toFixed(2)}</span>
                 </div>
                 
-                {billMode === 'full' && amountPaid && (
+                {amountPaid && (
                   <div className="mt-3 grid grid-cols-2 gap-3">
                     <div className="p-3 bg-white bg-opacity-80 backdrop-blur-sm rounded-lg">
                       <span className="text-gray-600 text-sm">Amount Paid</span>
@@ -436,13 +399,11 @@ const Calculator = () => {
                   </div>
                 )}
                 
-                {billMode === 'full' && (
-                  <div className="mt-3 text-center">
-                    <span className={`inline-block px-4 py-2 rounded-full ${paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-green-100 text-green-800 border border-green-200'}`}>
-                      {paymentStatus === 'pending' ? '⏳ Payment Pending' : '✓ Payment Cleared'}
-                    </span>
-                  </div>
-                )}
+                <div className="mt-3 text-center">
+                  <span className={`inline-block px-4 py-2 rounded-full ${paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-green-100 text-green-800 border border-green-200'}`}>
+                    {paymentStatus === 'pending' ? '⏳ Payment Pending' : '✓ Payment Cleared'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
