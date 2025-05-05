@@ -122,7 +122,7 @@ const OrderDetail = () => {
                 </svg>
                 Total Amount
               </div>
-              <div className="font-semibold text-blue-700 text-xl">${orderData.grandTotal?.toFixed(2) || '0.00'}</div>
+              <div className="font-semibold text-blue-700 text-xl">{orderData.grandTotal?.toFixed(2) || '0.00'}</div>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ const OrderDetail = () => {
                   </svg>
                   Price:
                 </div>
-                <div className="text-left font-medium">${parseFloat(product.price).toFixed(2)}</div>
+                <div className="text-left font-medium">{parseFloat(product.price).toFixed(2)}</div>
                 
                 <div className="text-gray-500 text-left flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -163,13 +163,13 @@ const OrderDetail = () => {
                   </svg>
                   Total:
                 </div>
-                <div className="text-left font-medium text-blue-700">${product.total.toFixed(2)}</div>
+                <div className="text-left font-medium text-blue-700">{product.total.toFixed(2)}</div>
               </div>
             </div>
           ))}
           <div className="mt-5 bg-blue-100 rounded-xl p-5 flex justify-between items-center shadow-sm transform transition duration-200 hover:shadow-md">
             <span className="font-semibold text-gray-800 text-lg">Grand Total:</span>
-            <span className="font-bold text-blue-700 text-xl">${orderData.grandTotal?.toFixed(2) || '0.00'}</span>
+            <span className="font-bold text-blue-700 text-xl">{orderData.grandTotal?.toFixed(2) || '0.00'}</span>
           </div>
         </div>
         
@@ -190,13 +190,13 @@ const OrderDetail = () => {
                   <tr key={index} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50 transition-colors duration-150`}>
                     <td className="py-4 px-5 whitespace-normal text-left font-medium">{product.name || 'Unnamed Product'}</td>
                     <td className="py-4 px-5 text-left">{product.count}</td>
-                    <td className="py-4 px-5 text-left">${parseFloat(product.price).toFixed(2)}</td>
-                    <td className="py-4 px-5 text-left font-medium text-blue-700">${product.total.toFixed(2)}</td>
+                    <td className="py-4 px-5 text-left">{parseFloat(product.price).toFixed(2)}</td>
+                    <td className="py-4 px-5 text-left font-medium text-blue-700">{product.total.toFixed(2)}</td>
                   </tr>
                 ))}
                 <tr className="bg-blue-100">
                   <td colSpan="3" className="py-4 px-5 text-left font-semibold text-gray-800 text-lg">Grand Total:</td>
-                  <td className="py-4 px-5 text-left font-bold text-blue-700 text-lg">${orderData.grandTotal?.toFixed(2) || '0.00'}</td>
+                  <td className="py-4 px-5 text-left font-bold text-blue-700 text-lg">{orderData.grandTotal?.toFixed(2) || '0.00'}</td>
                 </tr>
               </tbody>
             </table>

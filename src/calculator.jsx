@@ -76,7 +76,7 @@ const Calculator = () => {
         setSaveStatus('');
         setIsLoading(false);
         // Navigate to the client list page
-        navigate('/clients');
+        // navigate('/clients');
       }, 1500);
     } catch (error) {
       setSaveStatus(`Error: ${error.message}`);
@@ -104,7 +104,7 @@ const Calculator = () => {
               <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
               <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
             </svg>
-            View Client List
+            View Client
           </button>
         </div>
         
@@ -174,7 +174,7 @@ const Calculator = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
                       <div className="p-2 bg-blue-50 text-blue-800 rounded-lg font-medium border border-blue-100">
-                        ${product.total.toFixed(2)}
+                        {product.total.toFixed(2)}
                       </div>
                     </div>
                     <button
@@ -219,7 +219,7 @@ const Calculator = () => {
                   </div>
                   <div className="hidden md:block md:col-span-3 font-medium">
                     <div className="p-2 bg-blue-50 text-blue-800 rounded-lg border border-blue-100">
-                      ${product.total.toFixed(2)}
+                      {product.total.toFixed(2)}
                     </div>
                   </div>
                   <div className="hidden md:block md:col-span-2">
@@ -278,7 +278,7 @@ const Calculator = () => {
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100 shadow-sm">
               <div className="text-lg md:text-xl font-bold text-gray-800 text-center md:text-right">
                 {clientName ? `${clientName}'s Total: ` : 'Grand Total: '}
-                <span className="text-blue-700">${grandTotal.toFixed(2)}</span>
+                <span className="text-blue-700">{grandTotal.toFixed(2)}</span>
               </div>
             </div>
           </div>
