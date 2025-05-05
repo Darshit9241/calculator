@@ -256,7 +256,7 @@ const Calculator = () => {
             {/* Table header - Only visible on larger screens */}
             <div className="hidden md:grid md:grid-cols-12 md:gap-4 font-semibold text-gray-700 border-b p-4 bg-gray-50">
               {billMode === 'full' && <div className="col-span-3">Product Name</div>}
-              <div className={billMode === 'full' ? "col-span-2" : "col-span-4"}>Count</div>
+              <div className={billMode === 'full' ? "col-span-2" : "col-span-4"}>Quantity</div>
               <div className={billMode === 'full' ? "col-span-2" : "col-span-4"}>Price</div>
               <div className={billMode === 'full' ? "col-span-3" : "col-span-2"}>Total</div>
               <div className="col-span-2">Action</div>
@@ -281,7 +281,7 @@ const Calculator = () => {
                     )}
                     <div className="mb-3 grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Count</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
                         <input
                           type="number"
                           className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
