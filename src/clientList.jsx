@@ -33,15 +33,6 @@ const ClientList = () => {
     localStorage.setItem('clientOrders', JSON.stringify(updatedClients));
   };
 
-  const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem('token');
-    localStorage.removeItem('isLoggedIn');
-    
-    // Redirect to login page
-    navigate('/login');
-  };
-
   return (
     <div className="min-h-screen bg-gray-100 py-4 px-2 sm:py-8 sm:px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-3 sm:p-6">
@@ -52,7 +43,6 @@ const ClientList = () => {
               New Order
             </Link>
             <button 
-              onClick={handleLogout}
               className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-center sm:text-left"
             >
               Logout
