@@ -43,7 +43,10 @@ const OrderEdit = () => {
         
         // Recalculate total when count or price changes
         if (field === 'count' || field === 'price') {
-          updatedProduct.total = updatedProduct.count * updatedProduct.price;
+          // Convert empty strings to 0 for calculation
+          const count = updatedProduct.count === '' ? 0 : updatedProduct.count;
+          const price = updatedProduct.price === '' ? 0 : updatedProduct.price;
+          updatedProduct.total = count * price;
         }
         
         return updatedProduct;
@@ -56,7 +59,7 @@ const OrderEdit = () => {
   
   const addProduct = () => {
     const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-    setProducts([...products, { id: newId, name: '', count: 0, price: 0, total: 0 }]);
+    setProducts([...products, { id: newId, name: '', count: '', price: '', total: 0 }]);
   };
   
   const removeProduct = (id) => {
