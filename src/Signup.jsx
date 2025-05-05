@@ -75,15 +75,15 @@ const Signup = () => {
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
               </div>
-              <input
+            <input
                 className="pl-10 w-full py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                id="email"
-                type="email"
+              id="email"
+              type="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
             </div>
           </div>
           
@@ -97,15 +97,15 @@ const Signup = () => {
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <input
+            <input
                 className="pl-10 w-full py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                id="password"
-                type="password"
+              id="password"
+              type="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
             </div>
           </div>
           
@@ -119,23 +119,23 @@ const Signup = () => {
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <input
+            <input
                 className="pl-10 w-full py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                id="confirmPassword"
-                type="password"
+              id="confirmPassword"
+              type="password"
                 placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
             </div>
           </div>
           
-          <button
+            <button
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300"
-            type="submit"
-            disabled={loading}
-          >
+              type="submit"
+              disabled={loading}
+            >
             {loading ? (
               <span className="flex items-center justify-center">
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ const Signup = () => {
                 Creating account...
               </span>
             ) : 'Sign Up'}
-          </button>
+            </button>
         </form>
         
         <div className="mt-8 text-center">

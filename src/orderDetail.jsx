@@ -14,14 +14,14 @@ const OrderDetail = () => {
     }
   }, [id]);
 
-  const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem('token');
-    localStorage.removeItem('isLoggedIn');
+  // const handleLogout = () => {
+  //   // Clear authentication data
+  //   localStorage.removeItem('token');
+  //   localStorage.removeItem('isLoggedIn');
     
-    // Redirect to login page
-    navigate('/login');
-  };
+  //   // Redirect to login page
+  //   navigate('/login');
+  // };
 
   if (!orderData) {
     return (
@@ -32,9 +32,11 @@ const OrderDetail = () => {
             <Link to="/clients" className="inline-block text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors duration-200">
               Back to Client List
             </Link>
-            <button onClick={handleLogout} className="inline-block text-red-600 hover:text-red-800 font-medium hover:underline transition-colors duration-200">
+            {/* <button
+            //  onClick={handleLogout}
+              className="inline-block text-red-600 hover:text-red-800 font-medium hover:underline transition-colors duration-200">
               Logout
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
@@ -53,9 +55,9 @@ const OrderDetail = () => {
             <Link to="/clients" className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base shadow-sm whitespace-nowrap">
               Back to List
             </Link>
-            <button onClick={handleLogout} className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 text-sm sm:text-base shadow-sm whitespace-nowrap">
+            {/* <button onClick={handleLogout} className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 text-sm sm:text-base shadow-sm whitespace-nowrap">
               Logout
-            </button>
+            </button> */}
           </div>
         </div>
 

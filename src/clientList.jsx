@@ -42,11 +42,11 @@ const ClientList = () => {
             <Link to="/" className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-center sm:text-left">
               New Order
             </Link>
-            <button 
+            {/* <button 
               className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-center sm:text-left"
             >
               Logout
-            </button>
+            </button> */}
           </div>
         </div>
 
