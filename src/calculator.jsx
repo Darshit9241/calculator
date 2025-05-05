@@ -103,21 +103,23 @@ const Calculator = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-6 px-4 sm:py-10 sm:px-6">
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
         {/* Header with improved design */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-5 sm:px-6 flex justify-between items-center">
-          <h1 className="text-xl sm:text-2xl font-bold text-white">Product Calculator</h1>
-          <div className="flex gap-4">
-            <button
-              onClick={() => navigate('/clients')}
-              className="flex items-center px-4 py-2 bg-white bg-opacity-20 text-white rounded-md hover:bg-opacity-30 transition-all duration-300"
-            >
-              View Client
-            </button>
-            <button
-              onClick={handleLogout}
-              className="text-red-600 hover:text-red-800"
-            >
-              Logout
-            </button>
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-5 sm:px-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Product Calculator</h1>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => navigate('/clients')}
+                className="flex items-center px-3 py-2 bg-white bg-opacity-20 text-white rounded-md hover:bg-opacity-30 transition-all duration-300 text-sm sm:text-base"
+              >
+                View Client
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center px-3 py-2 bg-red-500 bg-opacity-90 text-white rounded-md hover:bg-opacity-100 transition-all duration-300 text-sm sm:text-base"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
         
