@@ -104,16 +104,25 @@ const Calculator = () => {
   const grandTotal = products.reduce((sum, product) => sum + product.total, 0);
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-8 px-4 sm:py-12 sm:px-6">
-      <div className="max-w-5xl mx-auto bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden transition-all duration-300">
-        {/* Header with modern glass morphism design */}
-        <div className="bg-gradient-to-r from-purple-700 to-blue-600 px-6 py-6 backdrop-blur-lg">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Siyaram Lace</h1>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 py-8 px-4">
+      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 border border-gray-100">
+        {/* Header with glass morphism effect */}
+        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 px-6 py-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-white opacity-10 backdrop-blur-xl"></div>
+          <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-gradient-to-br from-white to-transparent opacity-10"></div>
+          <div className="absolute -left-10 -bottom-16 w-40 h-40 rounded-full bg-indigo-300 opacity-10"></div>
+          
+          <div className="relative flex flex-col sm:flex-row justify-between items-center gap-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 100-12 6 6 0 000 12zm.75-6a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5h1.5z" clipRule="evenodd" />
+              </svg>
+              Siyaram Lace
+            </h1>
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => navigate('/clients')}
-                className="flex items-center px-4 py-2.5 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all duration-300 text-sm sm:text-base backdrop-blur-md shadow-lg"
+                className="flex items-center px-4 py-2.5 bg-white bg-opacity-20 text-white rounded-lg hover:bg-opacity-30 transition-all duration-300 text-sm font-medium backdrop-blur-sm shadow-sm"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
@@ -122,11 +131,11 @@ const Calculator = () => {
               </button>
               <button
                 onClick={handleLogout}
-                className="flex items-center px-4 py-2.5 bg-red-500/80 text-white rounded-xl hover:bg-red-500/100 transition-all duration-300 text-sm sm:text-base backdrop-blur-md shadow-lg"
+                className="flex items-center px-4 py-2.5 bg-red-500 bg-opacity-90 text-white rounded-lg hover:bg-opacity-100 transition-all duration-300 text-sm font-medium shadow-sm"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm1 2v10h10V5H4zm4 5a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clipRule="evenodd" />
-                  <path d="M11 10a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z" />
+                  <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7z" clipRule="evenodd" />
+                  <path d="M4 9h8v2H4V9z" />
                 </svg>
                 Logout
               </button>
@@ -134,24 +143,31 @@ const Calculator = () => {
           </div>
         </div>
         
-        <div className="p-6 sm:p-8 md:p-10 backdrop-blur-lg bg-white/5 text-white">
-          {/* Client name input with modern design */}
-          <div className="mb-8">
-            <label htmlFor="clientName" className="block text-white/90 font-medium mb-2 text-sm">Client Name</label>
-            <input
-              type="text"
-              id="clientName"
-              className="w-full p-3.5 border border-gray-300/20 bg-white/10 backdrop-blur-md rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-200 text-white placeholder-white/50"
-              value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
-              placeholder="Enter client name"
-            />
+        <div className="p-6 sm:p-8">
+          {/* Client name input with floating label */}
+          <div className="mb-6 relative">
+            <div className="relative">
+              <input
+                type="text"
+                id="clientName"
+                className="block w-full px-4 py-4 border border-gray-300 rounded-xl text-gray-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 peer placeholder-transparent"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                placeholder="Client Name"
+              />
+              <label 
+                htmlFor="clientName" 
+                className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-85 top-3 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-85 peer-focus:-translate-y-3 peer-focus:text-indigo-600 bg-white px-1"
+              >
+                Client Name
+              </label>
+            </div>
           </div>
           
-          {/* Payment status and amount section */}
+          {/* Payment status and amount section with improved design */}
           <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white/5 backdrop-blur-md p-5 rounded-xl shadow-lg border border-white/10">
-              <label className="block text-white/90 font-medium mb-3 text-sm">Payment Status</label>
+            <div className="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100">
+              <label className="block text-gray-700 font-medium mb-3 text-sm">Payment Status</label>
               <div className="flex gap-6">
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -162,8 +178,8 @@ const Calculator = () => {
                     onChange={() => setPaymentStatus('pending')}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-500/30 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
-                  <span className="ms-3 text-white">Pending</span>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                  <span className="ml-3 text-gray-700">Pending</span>
                 </label>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -174,40 +190,40 @@ const Calculator = () => {
                     onChange={() => setPaymentStatus('cleared')}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-500/30 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                  <span className="ms-3 text-white">Cleared</span>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                  <span className="ml-3 text-gray-700">Cleared</span>
                 </label>
               </div>
             </div>
             
-            <div className="bg-white/5 backdrop-blur-md p-5 rounded-xl shadow-lg border border-white/10">
-              <label htmlFor="amountPaid" className="block text-white/90 font-medium mb-3 text-sm">Amount Paid</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                  <span className="text-white/70">₹</span>
-                </div>
-                <input
-                  type="number"
-                  id="amountPaid"
-                  className="w-full p-3.5 ps-8 border border-gray-300/20 bg-white/10 backdrop-blur-md rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-200 text-white placeholder-white/50"
-                  value={amountPaid}
-                  onChange={(e) => setAmountPaid(e.target.value)}
-                  placeholder="0.00"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
+            <div className="relative">
+              <input
+                type="number"
+                id="amountPaid"
+                className="block w-full px-4 py-4 border border-gray-300 rounded-xl text-gray-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 peer placeholder-transparent"
+                value={amountPaid}
+                onChange={(e) => setAmountPaid(e.target.value)}
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+              <label 
+                htmlFor="amountPaid" 
+                className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-85 top-3 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-85 peer-focus:-translate-y-3 peer-focus:text-indigo-600 bg-white px-1"
+              >
+                Amount Paid
+              </label>
             </div>
           </div>
           
-          {/* Products section with glass morphism */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl shadow-lg border border-white/10 mb-8 overflow-hidden">
-            <div className="p-4 bg-gradient-to-r from-blue-600/30 to-purple-600/30 backdrop-blur-md border-b border-white/10">
-              <h2 className="text-lg font-semibold text-white">Product Details</h2>
+          {/* Products section with improved card design */}
+          <div className="bg-white border border-gray-200 rounded-xl shadow-lg mb-8 overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-800">Product Details</h2>
             </div>
             
             {/* Table header - Only visible on larger screens */}
-            <div className="hidden md:grid md:grid-cols-12 md:gap-4 font-semibold text-white/90 border-b border-white/10 p-4">
+            <div className="hidden md:grid md:grid-cols-12 md:gap-4 font-semibold text-gray-700 border-b p-4 bg-gray-50">
               <div className="col-span-3">Product Name</div>
               <div className="col-span-2">Count</div>
               <div className="col-span-2">Price</div>
@@ -215,15 +231,15 @@ const Calculator = () => {
               <div className="col-span-2">Action</div>
             </div>
             
-            <div className="divide-y divide-white/10">
+            <div className="divide-y divide-gray-100">
               {products.map(product => (
-                <div key={product.id} className="p-4 md:grid md:grid-cols-12 md:gap-4 md:items-center transition-all duration-200 hover:bg-white/5">
-                  {/* Mobile layout */}
+                <div key={product.id} className="p-4 md:grid md:grid-cols-12 md:gap-4 md:items-center transition-all duration-200 hover:bg-gray-50">
+                  {/* Mobile layout - stacked fields with labels */}
                   <div className="md:hidden mb-3">
-                    <label className="block text-sm font-medium text-white/80 mb-1">Product Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
                     <input
                       type="text"
-                      className="w-full p-3 border border-gray-300/20 bg-white/10 backdrop-blur-md rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-200 text-white placeholder-white/50"
+                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                       value={product.name}
                       onChange={(e) => handleChange(product.id, 'name', e.target.value)}
                       placeholder="Product name"
@@ -231,20 +247,20 @@ const Calculator = () => {
                   </div>
                   <div className="md:hidden mb-3 grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-white/80 mb-1">Count</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Count</label>
                       <input
                         type="number"
-                        className="w-full p-3 border border-gray-300/20 bg-white/10 backdrop-blur-md rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-200 text-white placeholder-white/50"
+                        className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                         value={product.count}
                         onChange={(e) => handleChange(product.id, 'count', e.target.value)}
                         min="0"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-white/80 mb-1">Price</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
                       <input
                         type="number"
-                        className="w-full p-3 border border-gray-300/20 bg-white/10 backdrop-blur-md rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-200 text-white placeholder-white/50"
+                        className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                         value={product.price}
                         onChange={(e) => handleChange(product.id, 'price', e.target.value)}
                         min="0"
@@ -254,13 +270,13 @@ const Calculator = () => {
                   </div>
                   <div className="md:hidden mb-3 flex justify-between items-center">
                     <div>
-                      <label className="block text-sm font-medium text-white/80 mb-1">Total</label>
-                      <div className="p-3 bg-blue-500/20 text-blue-300 rounded-xl font-medium border border-blue-500/30 backdrop-blur-md">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
+                      <div className="p-3 bg-indigo-50 text-indigo-800 rounded-xl font-medium border border-indigo-100">
                         ₹ {product.total.toFixed(2)}
                       </div>
                     </div>
                     <button
-                      className="flex items-center p-2.5 bg-red-500/80 text-white rounded-xl hover:bg-red-600/80 transition-all duration-300 backdrop-blur-md"
+                      className="flex items-center p-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all duration-300"
                       onClick={() => removeProduct(product.id)}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -270,11 +286,11 @@ const Calculator = () => {
                     </button>
                   </div>
                   
-                  {/* Desktop layout */}
+                  {/* Desktop layout - grid layout */}
                   <div className="hidden md:block md:col-span-3">
                     <input
                       type="text"
-                      className="w-full p-3 border border-gray-300/20 bg-white/10 backdrop-blur-md rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-200 text-white placeholder-white/50"
+                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                       value={product.name}
                       onChange={(e) => handleChange(product.id, 'name', e.target.value)}
                       placeholder="Product name"
@@ -283,7 +299,7 @@ const Calculator = () => {
                   <div className="hidden md:block md:col-span-2">
                     <input
                       type="number"
-                      className="w-full p-3 border border-gray-300/20 bg-white/10 backdrop-blur-md rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-200 text-white placeholder-white/50"
+                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                       value={product.count}
                       onChange={(e) => handleChange(product.id, 'count', e.target.value)}
                       min="0"
@@ -292,7 +308,7 @@ const Calculator = () => {
                   <div className="hidden md:block md:col-span-2">
                     <input
                       type="number"
-                      className="w-full p-3 border border-gray-300/20 bg-white/10 backdrop-blur-md rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-200 text-white placeholder-white/50"
+                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                       value={product.price}
                       onChange={(e) => handleChange(product.id, 'price', e.target.value)}
                       min="0"
@@ -300,13 +316,13 @@ const Calculator = () => {
                     />
                   </div>
                   <div className="hidden md:block md:col-span-3 font-medium">
-                    <div className="p-3 bg-blue-500/20 text-blue-300 rounded-xl border border-blue-500/30 backdrop-blur-md">
+                    <div className="p-3 bg-indigo-50 text-indigo-800 rounded-xl border border-indigo-100">
                       ₹ {product.total.toFixed(2)}
                     </div>
                   </div>
                   <div className="hidden md:block md:col-span-2">
                     <button
-                      className="flex items-center p-2.5 bg-red-500/80 text-white rounded-xl hover:bg-red-600/80 transition-all duration-300 backdrop-blur-md"
+                      className="flex items-center p-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all duration-300"
                       onClick={() => removeProduct(product.id)}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -320,11 +336,11 @@ const Calculator = () => {
             </div>
           </div>
           
-          {/* Actions and total section */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          {/* Actions and total section with glass morphism effect */}
+          <div className="mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                className="flex items-center justify-center p-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg"
+                className="flex items-center justify-center p-3.5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl hover:from-indigo-700 hover:to-blue-700 transition-all duration-300 shadow-md"
                 onClick={addProduct}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -334,7 +350,7 @@ const Calculator = () => {
               </button>
               
               <button
-                className={`flex items-center justify-center p-3.5 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700'} text-white rounded-xl transition-all duration-300 shadow-lg`}
+                className={`flex items-center justify-center p-3.5 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'} text-white rounded-xl transition-all duration-300 shadow-md`}
                 onClick={saveOrder}
                 disabled={products.every(p => p.total === 0) || isLoading}
               >
@@ -357,43 +373,54 @@ const Calculator = () => {
               </button>
             </div>
             
-            <div className="bg-gradient-to-r from-purple-900/40 to-blue-900/40 p-6 rounded-xl border border-white/10 shadow-lg backdrop-blur-md">
-              <div className="text-xl md:text-2xl font-bold text-white text-center md:text-right">
-                {clientName ? `${clientName}'s Total: ` : 'Grand Total: '}
-                <span className="text-purple-300">₹ {grandTotal.toFixed(2)}</span>
-              </div>
-              {amountPaid && (
-                <div className="text-base text-white/80 text-center md:text-right mt-3">
-                  <span>Amount Paid: </span>
-                  <span className="font-medium text-green-400">₹ {parseFloat(amountPaid).toFixed(2)}</span>
-                  <span className="mx-2">|</span>
-                  <span>Balance: </span>
-                  <span className={`font-medium ${(grandTotal - parseFloat(amountPaid || 0)) <= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    ₹ {(grandTotal - parseFloat(amountPaid || 0)).toFixed(2)}
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6 rounded-xl border border-indigo-200 shadow-lg relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-full bg-white opacity-90 backdrop-blur-sm"></div>
+              <div className="relative">
+                <div className="text-xl md:text-2xl font-bold text-gray-800 text-center">
+                  {clientName ? `${clientName}'s Order` : 'Order Summary'}
+                </div>
+                <div className="flex justify-between items-center mt-4 p-3 bg-white bg-opacity-80 backdrop-blur-sm rounded-lg">
+                  <span className="font-medium text-gray-700">Grand Total:</span>
+                  <span className="font-bold text-xl text-indigo-700">₹ {grandTotal.toFixed(2)}</span>
+                </div>
+                
+                {amountPaid && (
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-white bg-opacity-80 backdrop-blur-sm rounded-lg">
+                      <span className="text-gray-600 text-sm">Amount Paid</span>
+                      <div className="font-bold text-green-600">₹ {parseFloat(amountPaid).toFixed(2)}</div>
+                    </div>
+                    <div className="p-3 bg-white bg-opacity-80 backdrop-blur-sm rounded-lg">
+                      <span className="text-gray-600 text-sm">Balance</span>
+                      <div className={`font-bold ${(grandTotal - parseFloat(amountPaid || 0)) <= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        ₹ {(grandTotal - parseFloat(amountPaid || 0)).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="mt-3 text-center">
+                  <span className={`inline-block px-4 py-2 rounded-full ${paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-green-100 text-green-800 border border-green-200'}`}>
+                    {paymentStatus === 'pending' ? '⏳ Payment Pending' : '✓ Payment Cleared'}
                   </span>
                 </div>
-              )}
-              <div className="text-sm font-medium mt-3 text-center md:text-right">
-                <span className={`px-3 py-1.5 rounded-full ${paymentStatus === 'pending' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30'} backdrop-blur-sm`}>
-                  {paymentStatus === 'pending' ? 'Payment Pending' : 'Payment Cleared'}
-                </span>
               </div>
             </div>
           </div>
           
           {/* Status message with animation */}
           {saveStatus && (
-            <div className={`mt-6 p-4 ${saveStatus.includes('Error') ? 'bg-red-900/30 text-red-300 border-red-500/30' : 'bg-green-900/30 text-green-300 border-green-500/30'} rounded-xl text-center animate-fade-in border backdrop-blur-md`}>
+            <div className={`mt-6 p-4 ${saveStatus.includes('Error') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'} rounded-xl text-center animate-pulse border ${saveStatus.includes('Error') ? 'border-red-200' : 'border-green-200'} shadow-md`}>
               {saveStatus.includes('Error') ? (
                 <div className="flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   {saveStatus}
                 </div>
               ) : (
                 <div className="flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                   {saveStatus}
@@ -401,6 +428,11 @@ const Calculator = () => {
               )}
             </div>
           )}
+          
+          {/* Footer */}
+          <div className="mt-10 pt-4 border-t border-gray-200 text-center text-gray-500 text-sm">
+            <p>Siyaram Lace © {new Date().getFullYear()} | Billing System</p>
+          </div>
         </div>
       </div>
     </div>
