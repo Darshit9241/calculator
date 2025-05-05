@@ -5,7 +5,7 @@ const Calculator = () => {
   const navigate = useNavigate();
   const [clientName, setClientName] = useState('');
   const [products, setProducts] = useState([
-    { id: 1, name: '', count: 0, price: 0, total: 0 }
+    { id: 1, name: '', count: '', price: '', total: 0 }
   ]);
   const [saveStatus, setSaveStatus] = useState(''); // For showing save status message
   
@@ -16,7 +16,9 @@ const Calculator = () => {
         
         // Recalculate total when count or price changes
         if (field === 'count' || field === 'price') {
-          updatedProduct.total = updatedProduct.count * updatedProduct.price;
+          const count = updatedProduct.count === '' ? 0 : Number(updatedProduct.count);
+          const price = updatedProduct.price === '' ? 0 : Number(updatedProduct.price);
+          updatedProduct.total = count * price;
         }
         
         return updatedProduct;
@@ -29,7 +31,7 @@ const Calculator = () => {
   
   const addProduct = () => {
     const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-    setProducts([...products, { id: newId, name: '', count: 0, price: 0, total: 0 }]);
+    setProducts([...products, { id: newId, name: '', count: '', price: '', total: 0 }]);
   };
   
   const removeProduct = (id) => {
@@ -67,19 +69,36 @@ const Calculator = () => {
     }, 1500);
   };
   
+  const handleLogout = () => {
+    // Clear authentication data
+    localStorage.removeItem('token');
+    localStorage.removeItem('isLoggedIn');
+    
+    // Redirect to login page
+    navigate('/login');
+  };
+  
   const grandTotal = products.reduce((sum, product) => sum + product.total, 0);
   
   return (
     <div className="min-h-screen bg-gray-100 py-4 px-2 sm:py-8 sm:px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-3 sm:p-6">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Product Calculator</h1>
-          <button
-            onClick={() => navigate('/clients')}
-            className="text-blue-600 hover:text-blue-800"
-          >
-            View Client List
-          </button>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Siyaram Lace</h1>
+          <div className="flex gap-4">
+            <button
+              onClick={() => navigate('/clients')}
+              className="text-blue-600 hover:text-blue-800"
+            >
+              View Client List
+            </button>
+            <button
+              onClick={handleLogout}
+              className="text-red-600 hover:text-red-800"
+            >
+              Logout
+            </button>
+          </div>
         </div>
         
         <div className="mb-4 sm:mb-6">
@@ -123,8 +142,9 @@ const Calculator = () => {
                   type="number"
                   className="w-full p-2 border rounded-md"
                   value={product.count}
-                  onChange={(e) => handleChange(product.id, 'count', parseInt(e.target.value) || 0)}
+                  onChange={(e) => handleChange(product.id, 'count', e.target.value)}
                   min="0"
+                  placeholder="Count"
                 />
               </div>
               <div>
@@ -133,9 +153,10 @@ const Calculator = () => {
                   type="number"
                   className="w-full p-2 border rounded-md"
                   value={product.price}
-                  onChange={(e) => handleChange(product.id, 'price', parseFloat(e.target.value) || 0)}
+                  onChange={(e) => handleChange(product.id, 'price', e.target.value)}
                   min="0"
                   step="0.01"
+                  placeholder="Price"
                 />
               </div>
             </div>
@@ -169,8 +190,9 @@ const Calculator = () => {
                 type="number"
                 className="w-full p-2 border rounded-md"
                 value={product.count}
-                onChange={(e) => handleChange(product.id, 'count', parseInt(e.target.value) || 0)}
+                onChange={(e) => handleChange(product.id, 'count', e.target.value)}
                 min="0"
+                placeholder="Count"
               />
             </div>
             <div className="hidden sm:block sm:col-span-2">
@@ -178,9 +200,10 @@ const Calculator = () => {
                 type="number"
                 className="w-full p-2 border rounded-md"
                 value={product.price}
-                onChange={(e) => handleChange(product.id, 'price', parseFloat(e.target.value) || 0)}
+                onChange={(e) => handleChange(product.id, 'price', e.target.value)}
                 min="0"
                 step="0.01"
+                placeholder="Price"
               />
             </div>
             <div className="hidden sm:block sm:col-span-3 font-medium">
