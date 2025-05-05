@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const ClientList = () => {
   const [savedClients, setSavedClients] = useState([]);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 640);
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Load saved clients from localStorage when component mounts
@@ -38,16 +37,9 @@ const ClientList = () => {
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Client Orders</h1>
-          <div className="flex gap-3">
-            <Link to="/" className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-center sm:text-left">
-              New Order
-            </Link>
-            {/* <button 
-              className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-center sm:text-left"
-            >
-              Logout
-            </button> */}
-          </div>
+          <Link to="/" className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-center sm:text-left">
+            New Order
+          </Link>
         </div>
 
         {savedClients.length === 0 ? (
