@@ -104,8 +104,8 @@ const Calculator = () => {
   const grandTotal = products.reduce((sum, product) => sum + product.total, 0);
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 py-8 px-4">
-      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 border border-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50">
+      <div className="max-w-5xl mx-auto bg-white shadow-xl overflow-hidden transition-all duration-300">
         {/* Header with glass morphism effect */}
         <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 px-6 py-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-white opacity-10 backdrop-blur-xl"></div>
