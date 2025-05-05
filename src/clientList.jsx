@@ -503,12 +503,12 @@ const ClientList = () => {
                       )}
                     </div>
                     
-                    <div className="px-4 py-3 bg-gray-50 flex justify-between border-t border-gray-100">
+                    <div className="px-4 py-3 bg-gray-50 flex flex-wrap gap-2 border-t border-gray-100">
                       <button 
                         onClick={() => navigate(`/order/${client.id}`)}
-                        className="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm"
+                        className="flex-1 min-w-[70px] inline-flex items-center justify-center px-2 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs sm:text-sm"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
@@ -516,9 +516,9 @@ const ClientList = () => {
                       </button>
                       <button 
                         onClick={() => editOrder(client.id)}
-                        className="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm"
+                        className="flex-1 min-w-[70px] inline-flex items-center justify-center px-2 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs sm:text-sm"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         Edit
@@ -526,9 +526,9 @@ const ClientList = () => {
                       {client.paymentStatus !== 'cleared' && (
                         <button 
                           onClick={() => clearOrderPayment(client.id)}
-                          className="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 rounded-lg text-sm"
+                          className="flex-1 min-w-[70px] inline-flex items-center justify-center px-2 py-1.5 bg-green-50 text-green-700 rounded-lg text-xs sm:text-sm"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                           Clear
@@ -536,9 +536,9 @@ const ClientList = () => {
                       )}
                       <button 
                         onClick={() => deleteOrder(client.id)}
-                        className="inline-flex items-center px-3 py-1 bg-red-50 text-red-700 rounded-lg text-sm"
+                        className="flex-1 min-w-[70px] inline-flex items-center justify-center px-2 py-1.5 bg-red-50 text-red-700 rounded-lg text-xs sm:text-sm"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                         Delete
