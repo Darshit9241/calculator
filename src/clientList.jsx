@@ -221,37 +221,76 @@ const ClientList = () => {
             </div>
           </div>
           
+          {/* Add summary stats below the header - improved for mobile */}
+          <div className="backdrop-blur-md bg-white/5 rounded-xl shadow-lg p-4 sm:p-5 mb-6 sm:mb-8 border border-white/10">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+              <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 sm:p-4 border border-white/10">
+                <p className="text-xs text-slate-400">Total Orders</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">{savedClients.length}</p>
+                <div className="h-1 w-12 bg-white/20 rounded mt-2 mb-1"></div>
+                <p className="text-[10px] sm:text-xs text-slate-500">All time</p>
+              </div>
+              
+              <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 sm:p-4 border border-white/10">
+                <p className="text-xs text-slate-400">Total Amount</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1 truncate">₹{savedClients.reduce((total, client) => total + (client.grandTotal || 0), 0).toFixed(2)}</p>
+                <div className="h-1 w-12 bg-white/20 rounded mt-2 mb-1"></div>
+                <p className="text-[10px] sm:text-xs text-slate-500">Order value</p>
+              </div>
+              
+              <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 sm:p-4 border border-white/10">
+                <p className="text-xs text-slate-400">Received</p>
+                <p className="text-xl sm:text-2xl font-bold text-emerald-400 mt-1 truncate">₹{savedClients.reduce((total, client) => total + (client.amountPaid || 0), 0).toFixed(2)}</p>
+                <div className="h-1 w-12 bg-emerald-400/20 rounded mt-2 mb-1"></div>
+                <p className="text-[10px] sm:text-xs text-slate-500">Payments</p>
+              </div>
+              
+              <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 sm:p-4 border border-white/10">
+                <p className="text-xs text-slate-400">Pending</p>
+                <p className="text-xl sm:text-2xl font-bold text-amber-400 mt-1 truncate">₹{savedClients.reduce((total, client) => {
+                  const pendingAmount = (client.grandTotal || 0) - (client.amountPaid || 0);
+                  return total + (pendingAmount > 0 ? pendingAmount : 0);
+                }, 0).toFixed(2)}</p>
+                <div className="h-1 w-12 bg-amber-400/20 rounded mt-2 mb-1"></div>
+                <p className="text-[10px] sm:text-xs text-slate-500">To collect</p>
+              </div>
+            </div>
+          </div>
+          
           {/* Filter options */}
           <div className="grid grid-cols-3 gap-2 sm:gap-4">
             <button
               onClick={() => setActiveFilter('all')}
-              className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-3 rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center ${
                 activeFilter === 'all'
                   ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
                   : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'
               }`}
             >
-              All Orders ({savedClients.length})
+              <span className="text-xs opacity-80">All Orders</span>
+              <span className="text-lg mt-1">{savedClients.length}</span>
             </button>
             <button
               onClick={() => setActiveFilter('pending')}
-              className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-3 rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center ${
                 activeFilter === 'pending'
                   ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20'
                   : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'
               }`}
             >
-              Pending ({savedClients.filter(client => client.paymentStatus !== 'cleared').length})
+              <span className="text-xs opacity-80">Pending</span>
+              <span className="text-lg mt-1">{savedClients.filter(client => client.paymentStatus !== 'cleared').length}</span>
             </button>
             <button
               onClick={() => setActiveFilter('cleared')}
-              className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-3 rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center ${
                 activeFilter === 'cleared'
                   ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20'
                   : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'
               }`}
             >
-              Cleared ({savedClients.filter(client => client.paymentStatus === 'cleared').length})
+              <span className="text-xs opacity-80">Cleared</span>
+              <span className="text-lg mt-1">{savedClients.filter(client => client.paymentStatus === 'cleared').length}</span>
             </button>
           </div>
         </div>
