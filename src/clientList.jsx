@@ -309,7 +309,7 @@ const ClientList = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredClients.map((client) => (
               <div 
                 key={client.id} 
@@ -337,29 +337,29 @@ const ClientList = () => {
                 
                 {/* Card content */}
                 <div className="p-5 space-y-4">
-                  {/* Financial summary */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 border border-white/10">
-                      <p className="text-xs text-slate-400 mb-1">Total</p>
-                      <p className="font-medium text-white">₹{client.grandTotal?.toFixed(2) || '0.00'}</p>
+                  {/* Financial summary - with better mobile handling */}
+                  <div className="grid grid-cols-1 xs:grid-cols-3 gap-3">
+                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 border border-white/10 flex xs:block justify-between items-center">
+                      <p className="text-xs text-slate-400 mr-2 xs:mr-0 whitespace-nowrap">Total:</p>
+                      <p className="font-medium text-white text-sm sm:text-base truncate">₹{client.grandTotal?.toFixed(2) || '0.00'}</p>
                     </div>
-                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 border border-white/10">
-                      <p className="text-xs text-slate-400 mb-1">Paid</p>
-                      <p className="font-medium text-emerald-400">₹{client.amountPaid?.toFixed(2) || '0.00'}</p>
+                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 border border-white/10 flex xs:block justify-between items-center">
+                      <p className="text-xs text-slate-400 mr-2 xs:mr-0 whitespace-nowrap">Paid:</p>
+                      <p className="font-medium text-emerald-400 text-sm sm:text-base truncate">₹{client.amountPaid?.toFixed(2) || '0.00'}</p>
                     </div>
-                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 border border-white/10">
-                      <p className="text-xs text-slate-400 mb-1">Balance</p>
-                      <p className={`font-medium ${(client.grandTotal - (client.amountPaid || 0)) <= 0 ? 'text-sky-400' : 'text-amber-400'}`}>
+                    <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 border border-white/10 flex xs:block justify-between items-center">
+                      <p className="text-xs text-slate-400 mr-2 xs:mr-0 whitespace-nowrap">Balance:</p>
+                      <p className={`font-medium text-sm sm:text-base truncate ${(client.grandTotal - (client.amountPaid || 0)) <= 0 ? 'text-sky-400' : 'text-amber-400'}`}>
                         ₹{(client.grandTotal - (client.amountPaid || 0)).toFixed(2)}
                       </p>
                     </div>
                   </div>
                   
-                  {/* Products section */}
-                  <div className="bg-white/5 backdrop-blur-md rounded-lg p-4 border border-white/10">
-                    <div className="flex justify-between items-center mb-3">
-                      <p className="text-sm font-medium text-white">Products</p>
-                      <span className="bg-white/10 text-xs text-white px-2 py-1 rounded-full">
+                  {/* Products section - better mobile handling */}
+                  <div className="bg-white/5 backdrop-blur-md rounded-lg p-3 sm:p-4 border border-white/10">
+                    <div className="flex justify-between items-center mb-2 sm:mb-3">
+                      <p className="text-xs sm:text-sm font-medium text-white">Products</p>
+                      <span className="bg-white/10 text-xs text-white px-2 py-0.5 sm:py-1 rounded-full">
                         {client.products?.length || 0} items
                       </span>
                     </div>
@@ -385,11 +385,11 @@ const ClientList = () => {
                   </div>
                 </div>
                 
-                {/* Card actions */}
+                {/* Card actions - improved for mobile */}
                 <div className="grid grid-cols-4 border-t border-slate-700/50">
                   <button 
                     onClick={() => navigate(`/order/${client.id}`)}
-                    className="py-3 text-center text-sm font-medium text-slate-300 hover:bg-white/10 transition-colors border-r border-slate-700/50 flex items-center justify-center"
+                    className="py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-slate-300 hover:bg-white/10 transition-colors border-r border-slate-700/50 flex items-center justify-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -399,7 +399,7 @@ const ClientList = () => {
                   </button>
                   <button 
                     onClick={() => editOrder(client.id)}
-                    className="py-3 text-center text-sm font-medium text-slate-300 hover:bg-white/10 transition-colors border-r border-slate-700/50 flex items-center justify-center"
+                    className="py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-slate-300 hover:bg-white/10 transition-colors border-r border-slate-700/50 flex items-center justify-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -409,7 +409,7 @@ const ClientList = () => {
                   {client.paymentStatus !== 'cleared' ? (
                     <button 
                       onClick={() => clearOrderPayment(client.id)}
-                      className="py-3 text-center text-sm font-medium text-emerald-400 hover:bg-emerald-500/10 transition-colors border-r border-slate-700/50 flex items-center justify-center"
+                      className="py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-emerald-400 hover:bg-emerald-500/10 transition-colors border-r border-slate-700/50 flex items-center justify-center"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -417,7 +417,7 @@ const ClientList = () => {
                       Pay
                     </button>
                   ) : (
-                    <div className="py-3 text-center text-sm font-medium text-sky-400 bg-sky-500/10 border-r border-slate-700/50 flex items-center justify-center opacity-70">
+                    <div className="py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-sky-400 bg-sky-500/10 border-r border-slate-700/50 flex items-center justify-center opacity-70">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -426,7 +426,7 @@ const ClientList = () => {
                   )}
                   <button 
                     onClick={() => deleteOrder(client.id)}
-                    className="py-3 text-center text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors flex items-center justify-center"
+                    className="py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors flex items-center justify-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
