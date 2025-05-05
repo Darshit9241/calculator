@@ -142,122 +142,217 @@ const ClientList = () => {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {savedClients.map((client) => (
-                <div 
-                  key={client.id} 
-                  className="border border-white/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden bg-white/80 backdrop-blur-sm hover:bg-white/90 transform hover:-translate-y-1"
-                >
-                  <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-blue-500/10 to-indigo-500/10">
-                    <div className="flex flex-wrap justify-between items-start gap-2 mb-3">
-                      <h2 className="text-xl font-bold truncate text-gray-800 flex-grow">
-                        {client.clientName || 'Unnamed Client'}
-                      </h2>
-                      <span className="text-sm text-gray-600 font-medium bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm border border-white/50">
-                        {formatDate(client.timestamp)}
-                      </span>
+            <>
+              {/* Desktop view - Table format */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Client Name</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Date</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Products</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Product Details</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Total</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Paid</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Balance</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {savedClients.map((client, index) => (
+                      <tr 
+                        key={client.id} 
+                        className={`hover:bg-blue-50/50 border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+                      >
+                        <td className="px-4 py-4">
+                          <div className="font-medium text-gray-800">{client.clientName || 'Unnamed Client'}</div>
+                          <div className="text-xs text-gray-500">ID: {client.id}</div>
+                        </td>
+                        <td className="px-4 py-4 text-center text-sm text-gray-600">{formatDate(client.timestamp)}</td>
+                        <td className="px-4 py-4 text-center">
+                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold">
+                            {client.products?.length || 0}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="max-h-24 overflow-y-auto pr-2">
+                            {client.products && client.products.length > 0 ? (
+                              <ul className="space-y-1.5">
+                                {client.products.map((product, prodIndex) => (
+                                  <li key={prodIndex} className="text-xs flex justify-between">
+                                    <span className="font-medium text-gray-700 truncate max-w-[120px]">
+                                      {product.name || 'Unnamed Product'}
+                                    </span>
+                                    <span className="text-gray-500 whitespace-nowrap ml-2">
+                                      {product.count} × ₹{parseFloat(product.price).toFixed(2)}
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <span className="text-xs text-gray-500 italic">No products</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 text-center font-medium text-gray-800">₹{client.grandTotal?.toFixed(2) || '0.00'}</td>
+                        <td className="px-4 py-4 text-center font-medium text-blue-600">₹{client.amountPaid?.toFixed(2) || '0.00'}</td>
+                        <td className="px-4 py-4 text-center">
+                          <span className={`font-medium ${(client.grandTotal - (client.amountPaid || 0)) <= 0 ? 'text-green-600' : 'text-amber-600'}`}>
+                            ₹{(client.grandTotal - (client.amountPaid || 0)).toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 text-center">
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${client.paymentStatus === 'cleared' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                            {client.paymentStatus === 'cleared' ? 'Cleared' : 'Pending'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 text-center">
+                          <div className="flex items-center justify-center space-x-2">
+                            <button 
+                              onClick={() => navigate(`/order/${client.id}`)}
+                              className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600" 
+                              title="View Order"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                            </button>
+                            <button 
+                              onClick={() => editOrder(client.id)}
+                              className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600" 
+                              title="Edit Order"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                            <button 
+                              onClick={() => deleteOrder(client.id)}
+                              className="p-1.5 rounded-lg hover:bg-red-100 text-red-500" 
+                              title="Delete Order"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile view - Card format */}
+              <div className="md:hidden space-y-4">
+                {savedClients.map((client) => (
+                  <div 
+                    key={client.id} 
+                    className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100"
+                  >
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium text-gray-800">{client.clientName || 'Unnamed Client'}</h3>
+                          <p className="text-xs text-gray-500">ID: {client.id}</p>
+                        </div>
+                        <span className="text-xs text-gray-600 bg-white/80 px-2 py-1 rounded-full">
+                          {formatDate(client.timestamp)}
+                        </span>
+                      </div>
                     </div>
                     
-                    <div className="flex items-center">
-                      <span className="inline-flex items-center text-gray-600 text-sm bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm border border-white/50">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                        </svg>
-                        Order ID: {client.id}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="p-5">
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-3 text-center border border-white/50 shadow-sm">
-                        <div className="text-xs uppercase tracking-wider text-gray-500 mb-1">Products</div>
-                        <div className="font-bold text-2xl text-gray-700">{client.products?.length || 0}</div>
-                      </div>
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 text-center border border-white/50 shadow-sm">
-                        <div className="text-xs uppercase tracking-wider text-gray-500 mb-1">Total</div>
-                        <div className="font-bold text-2xl text-green-600">₹{client.grandTotal?.toFixed(2) || '0.00'}</div>
-                      </div>
-                    </div>
-                    
-                    {/* Payment information */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 text-center border border-white/50 shadow-sm">
-                        <div className="text-xs uppercase tracking-wider text-gray-500 mb-1">Amount Paid</div>
-                        <div className="font-bold text-2xl text-blue-600">₹{client.amountPaid?.toFixed(2) || '0.00'}</div>
-                      </div>
-                      <div className={`${(client.grandTotal - (client.amountPaid || 0)) <= 0 ? 'bg-gradient-to-br from-green-50 to-emerald-50' : 'bg-gradient-to-br from-yellow-50 to-amber-50'} rounded-xl p-3 text-center border border-white/50 shadow-sm`}>
-                        <div className="text-xs uppercase tracking-wider text-gray-500 mb-1">Balance</div>
-                        <div className={`font-bold text-2xl ${(client.grandTotal - (client.amountPaid || 0)) <= 0 ? 'text-green-600' : 'text-amber-600'}`}>
-                          ₹{(client.grandTotal - (client.amountPaid || 0)).toFixed(2)}
+                    <div className="p-4 space-y-3">
+                      {/* Financial information in columns */}
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="bg-gray-50 rounded-lg p-2">
+                          <div className="text-xs text-gray-500">Products</div>
+                          <div className="font-semibold text-blue-600">{client.products?.length || 0}</div>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-2">
+                          <div className="text-xs text-gray-500">Total</div>
+                          <div className="font-semibold text-gray-800">₹{client.grandTotal?.toFixed(2) || '0.00'}</div>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-2">
+                          <div className="text-xs text-gray-500">Status</div>
+                          <div className={`text-xs font-medium ${client.paymentStatus === 'cleared' ? 'text-green-600' : 'text-amber-600'}`}>
+                            {client.paymentStatus === 'cleared' ? 'Cleared' : 'Pending'}
+                          </div>
                         </div>
                       </div>
+                      
+                      {/* Payment details */}
+                      <div className="grid grid-cols-2 gap-2 bg-gray-50 rounded-lg p-3">
+                        <div>
+                          <div className="text-xs text-gray-500">Amount Paid</div>
+                          <div className="font-semibold text-blue-600">₹{client.amountPaid?.toFixed(2) || '0.00'}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-500">Balance</div>
+                          <div className={`font-semibold ${(client.grandTotal - (client.amountPaid || 0)) <= 0 ? 'text-green-600' : 'text-amber-600'}`}>
+                            ₹{(client.grandTotal - (client.amountPaid || 0)).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Product list */}
+                      {client.products && client.products.length > 0 && (
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-2 font-medium border-b border-gray-200 pb-1">Product List</div>
+                          <div className="max-h-32 overflow-y-auto">
+                            <ul className="space-y-2">
+                              {client.products.map((product, index) => (
+                                <li key={index} className="flex justify-between items-center text-sm">
+                                  <span className="font-medium truncate max-w-[150px] text-gray-800">
+                                    {product.name || 'Unnamed Product'}
+                                  </span>
+                                  <span className="text-gray-600 whitespace-nowrap bg-white px-2 py-0.5 rounded text-xs border border-gray-200">
+                                    {product.count} × ₹{parseFloat(product.price).toFixed(2)}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
                     </div>
                     
-                    {/* Payment status badge */}
-                    <div className="mt-3 mb-4 flex justify-center">
-                      <span className={`px-4 py-1.5 rounded-full text-sm font-medium ${client.paymentStatus === 'cleared' ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200' : 'bg-gradient-to-r from-yellow-100 to-amber-100 text-amber-800 border border-yellow-200'}`}>
-                        {client.paymentStatus === 'cleared' ? 'Payment Cleared' : 'Payment Pending'}
-                      </span>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <div className="flex items-center mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <div className="px-4 py-3 bg-gray-50 flex justify-between border-t border-gray-100">
+                      <button 
+                        onClick={() => navigate(`/order/${client.id}`)}
+                        className="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
-                        <span className="text-sm font-medium text-gray-700">Product Summary</span>
-                      </div>
-                      <div className="max-h-32 overflow-y-auto border border-gray-100 rounded-xl p-3 bg-gradient-to-br from-gray-50 to-blue-50/30 shadow-inner">
-                        <ul className="space-y-2.5">
-                          {client.products?.map((product, prodIndex) => (
-                            <li key={prodIndex} className="text-sm flex justify-between items-center">
-                              <span className="font-medium truncate max-w-[150px] text-gray-800">
-                                {product.name || 'Unnamed Product'}
-                              </span>
-                              <span className="text-gray-600 whitespace-nowrap ml-2 bg-white/80 backdrop-blur-sm px-2.5 py-1 rounded-lg text-xs shadow-sm border border-white/50">
-                                {product.count} × ₹{parseFloat(product.price).toFixed(2)}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                        View
+                      </button>
+                      <button 
+                        onClick={() => editOrder(client.id)}
+                        className="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => deleteOrder(client.id)}
+                        className="inline-flex items-center px-3 py-1 bg-red-50 text-red-700 rounded-lg text-sm"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Delete
+                      </button>
                     </div>
                   </div>
-                  
-                  <div className="mt-3 p-4 border-t border-gray-100 grid grid-cols-3 gap-2 bg-gradient-to-br from-gray-50 to-blue-50/30">
-                    <button 
-                      onClick={() => navigate(`/order/${client.id}`)}
-                      className="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl hover:bg-white/70 transition-all text-green-600 hover:text-green-700 hover:shadow-sm"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      <span className="text-xs font-medium">View</span>
-                    </button>
-                    <button 
-                      onClick={() => editOrder(client.id)}
-                      className="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl hover:bg-white/70 transition-all text-blue-600 hover:text-blue-700 hover:shadow-sm"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      <span className="text-xs font-medium">Edit</span>
-                    </button>
-                    <button
-                      onClick={() => deleteOrder(client.id)}
-                      className="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl hover:bg-white/70 transition-all text-red-500 hover:text-red-600 hover:shadow-sm"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                      <span className="text-xs font-medium">Delete</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
