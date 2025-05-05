@@ -8,6 +8,7 @@ const ClientList = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,16 +27,28 @@ const ClientList = () => {
   useEffect(() => {
     // Apply filters when savedClients or activeFilter changes
     applyFilters();
-  }, [savedClients, activeFilter]);
+  }, [savedClients, activeFilter, searchQuery]);
 
   const applyFilters = () => {
-    if (activeFilter === 'all') {
-      setFilteredClients(savedClients);
-    } else if (activeFilter === 'pending') {
-      setFilteredClients(savedClients.filter(client => client.paymentStatus !== 'cleared'));
+    let filtered = savedClients;
+    
+    // First filter by payment status
+    if (activeFilter === 'pending') {
+      filtered = filtered.filter(client => client.paymentStatus !== 'cleared');
     } else if (activeFilter === 'cleared') {
-      setFilteredClients(savedClients.filter(client => client.paymentStatus === 'cleared'));
+      filtered = filtered.filter(client => client.paymentStatus === 'cleared');
     }
+    
+    // Then apply search query if it exists
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(client => 
+        (client.id && client.id.toLowerCase().includes(query)) || 
+        (client.clientName && client.clientName.toLowerCase().includes(query))
+      );
+    }
+    
+    setFilteredClients(filtered);
   };
 
   const fetchClients = async () => {
@@ -254,6 +267,34 @@ const ClientList = () => {
                 <div className="h-1 w-12 bg-amber-400/20 rounded mt-2 mb-1"></div>
                 <p className="text-[10px] sm:text-xs text-slate-500">To collect</p>
               </div>
+            </div>
+          </div>
+          
+          {/* Search bar */}
+          <div className="mb-6">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by order ID or client name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="absolute inset-y-0 right-0 flex items-center pr-10"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-400 hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
           
