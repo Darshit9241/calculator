@@ -105,7 +105,7 @@ const Calculator = () => {
         {/* Header with improved design */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-5 sm:px-6">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Product Calculator</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Siyaram Lace</h1>
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => navigate('/clients')}
