@@ -1024,18 +1024,18 @@ const ClientList = () => {
                 {/* Card content */}
                 <div className="p-5 space-y-4">
                   {/* Financial summary */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-col`}>
+                  <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 xs:gap-3">
+                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-row xs:flex-col justify-between xs:justify-start`}>
                       <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total:</p>
-                      <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm sm:text-base truncate`}>₹{client.grandTotal?.toFixed(2) || '0.00'}</p>
+                      <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm sm:text-base`}>₹{client.grandTotal?.toFixed(2) || '0.00'}</p>
                     </div>
-                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-col`}>
+                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-row xs:flex-col justify-between xs:justify-start`}>
                       <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Paid:</p>
-                      <p className="font-medium text-emerald-500 text-sm sm:text-base truncate">₹{client.amountPaid?.toFixed(2) || '0.00'}</p>
+                      <p className="font-medium text-emerald-500 text-sm sm:text-base">₹{client.amountPaid?.toFixed(2) || '0.00'}</p>
                     </div>
-                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-col`}>
+                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-row xs:flex-col justify-between xs:justify-start`}>
                       <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Balance:</p>
-                      <p className={`font-medium text-sm sm:text-base truncate ${(client.grandTotal - (client.amountPaid || 0)) <= 0 ? 'text-sky-500' : 'text-amber-500'}`}>
+                      <p className={`font-medium text-sm sm:text-base ${(client.grandTotal - (client.amountPaid || 0)) <= 0 ? 'text-sky-500' : 'text-amber-500'}`}>
                         ₹{(client.grandTotal - (client.amountPaid || 0)).toFixed(2)}
                       </p>
                     </div>
@@ -1055,10 +1055,10 @@ const ClientList = () => {
                         <ul className="space-y-2">
                           {client.products.slice().reverse().map((product, index) => (
                             <li key={index} className={`flex justify-between items-center text-sm ${isDarkMode ? 'bg-white/5' : 'bg-white'} rounded-lg p-2 border ${isDarkMode ? 'border-white/5' : 'border-gray-100'}`}>
-                              <span className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} truncate max-w-[120px]`}>
+                              <span className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} truncate max-w-[120px] sm:max-w-[180px]`}>
                                 {product.name || 'Unnamed Product'}
                               </span>
-                              <span className={`${isDarkMode ? 'text-slate-400' : 'text-gray-500'} whitespace-nowrap text-xs ${isDarkMode ? 'bg-white/10' : 'bg-gray-100'} px-2 py-0.5 rounded`}>
+                              <span className={`${isDarkMode ? 'text-slate-400' : 'text-gray-500'} whitespace-nowrap text-xs ${isDarkMode ? 'bg-white/10' : 'bg-gray-100'} px-2 py-0.5 rounded ml-2`}>
                                 {product.count} × ₹{parseFloat(product.price).toFixed(2)}
                               </span>
                             </li>
