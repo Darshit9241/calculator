@@ -10,14 +10,7 @@ const OrderDetail = () => {
   const navigate = useNavigate();
   const { toPDF, targetRef } = usePDF({
     filename: `invoice-${id}.pdf`,
-    page: { 
-      margin: 20,
-      format: 'A4',
-      orientation: 'portrait' 
-    },
-    method: 'open',
-    resolution: 2,
-    pagebreak: { mode: 'avoid-all' }
+    page: { margin: 10 }
   });
 
   const fetchOrder = useCallback(async () => {
@@ -45,35 +38,7 @@ const OrderDetail = () => {
   }, [fetchOrder]);
 
   const handleDownloadPdf = () => {
-    // Remove print-only elements temporarily for better PDF formatting
-    const printElements = document.querySelectorAll('.print\\:hidden');
-    printElements.forEach(el => el.classList.add('hidden-temp'));
-    
-    // Force mobile-friendly layout before generating PDF
-    const targetElement = targetRef.current;
-    if (targetElement) {
-      // Save original styles
-      const originalOverflow = document.body.style.overflow;
-      const originalWidth = targetElement.style.width;
-      
-      // Set PDF-optimized styles
-      document.body.style.overflow = 'visible';
-      targetElement.style.width = '210mm'; // A4 width
-      
-      // Generate PDF
-      setTimeout(() => {
-        toPDF();
-        
-        // Restore original styles
-        document.body.style.overflow = originalOverflow;
-        targetElement.style.width = originalWidth;
-        
-        // Restore print elements
-        printElements.forEach(el => el.classList.remove('hidden-temp'));
-      }, 100);
-    } else {
-      toPDF();
-    }
+    toPDF();
   };
 
   if (loading) {
@@ -178,27 +143,6 @@ const OrderDetail = () => {
 
         {/* Invoice Content */}
         <div ref={targetRef} className="px-4 sm:px-6 md:px-8 py-6 sm:py-8">
-          {/* PDF-specific styling */}
-          <style type="text/css" media="print">
-            {`
-              @page {
-                size: A4 portrait;
-                margin: 20mm;
-              }
-              body {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-              }
-              table {
-                width: 100% !important;
-                table-layout: fixed !important;
-              }
-              td, th {
-                padding: 8px !important;
-                word-break: break-word !important;
-              }
-            `}
-          </style>
           {/* Company Logo and Invoice Title */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-4 border-b">
             <div className="flex items-start sm:items-center flex-col sm:flex-row mb-4 md:mb-0">
@@ -222,18 +166,18 @@ const OrderDetail = () => {
 
           {/* Bill To & Invoice Info */}
           <div className="flex flex-col md:flex-row justify-between mb-8 gap-6">
-            <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-100 md:w-1/2 flex-1">
+            <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-100 md:w-1/2">
               <h3 className="text-gray-500 font-medium mb-3 text-xs sm:text-sm uppercase tracking-wider">Client Name</h3>
               <p className="text-lg sm:text-xl font-bold text-gray-800 mb-2">{orderData.clientName || 'Client Name'}</p>
-              <p className="text-sm sm:text-base text-gray-600 break-words">{orderData.clientAddress || 'Client Address'}</p>
+              <p className="text-sm sm:text-base text-gray-600">{orderData.clientAddress || 'Client Address'}</p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-100 md:w-1/2 flex-1">
+            <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-100 md:w-1/2">
               <div className="grid grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
                 <div className="text-gray-500 font-medium">Invoice Date:</div>
                 <div className="text-gray-800 font-semibold text-right">
                   {new Date(orderData.timestamp).toLocaleDateString('en-IN', {
                     year: 'numeric',
-                    month: 'short',
+                    month: 'long',
                     day: 'numeric',
                     timeZone: 'Asia/Kolkata',
                   })}
@@ -243,7 +187,7 @@ const OrderDetail = () => {
                 <div className="text-gray-800 font-semibold text-right">
                   {new Date(orderData.timestamp).toLocaleDateString('en-IN', {
                     year: 'numeric',
-                    month: 'short',
+                    month: 'long',
                     day: 'numeric',
                     timeZone: 'Asia/Kolkata',
                   })}
@@ -260,23 +204,24 @@ const OrderDetail = () => {
                 </div>
               </div>
             </div>
+
           </div>
 
           {/* Invoice Items Table */}
           <div className="mb-8 overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
-            <table className="min-w-full divide-y divide-gray-200 table-fixed">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th scope="col" className="px-3 sm:px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">Item Description</th>
-                  <th scope="col" className="px-3 sm:px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Qty</th>
-                  <th scope="col" className="px-3 sm:px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Unit Price</th>
-                  <th scope="col" className="px-3 sm:px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Amount</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Description</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {orderData.products?.map((product, index) => (
                   <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-900 break-words">{product.name || 'Product Item'}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-900">{product.name || 'Product Item'}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-right">{product.count}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-right">₹{parseFloat(product.price).toFixed(2)}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900 font-medium text-right">₹{(parseFloat(product.price) * parseFloat(product.count)).toFixed(2)}</td>
