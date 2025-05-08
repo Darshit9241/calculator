@@ -101,7 +101,8 @@ const OrderDetail = () => {
   }
 
   // Calculate payment status details
-  const balanceDue = orderData.grandTotal - (orderData.amountPaid || 0);
+  const balanceDue = (typeof orderData.grandTotal === 'number' ? orderData.grandTotal : 0) - 
+                    (typeof orderData.amountPaid === 'number' ? orderData.amountPaid : 0);
   const isPaid = balanceDue <= 0 || orderData.paymentStatus === 'cleared';
 
   return (
@@ -216,8 +217,10 @@ const OrderDetail = () => {
                   <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-900">{product.name || 'Product Item'}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-right">{product.count}</td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-right">₹{parseFloat(product.price).toFixed(2)}</td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900 font-medium text-right">₹{(parseFloat(product.price) * parseFloat(product.count)).toFixed(2)}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-right">₹{typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900 font-medium text-right">₹{(typeof product.price === 'number' && typeof product.count === 'number' ? 
+                      (product.price * product.count).toFixed(2) : 
+                      (parseFloat(product.price || 0) * parseFloat(product.count || 0)).toFixed(2))}</td>
                   </tr>
                 ))}
               </tbody>
@@ -229,16 +232,16 @@ const OrderDetail = () => {
             <div className="w-full bg-gray-50 rounded-xl p-4 sm:p-6 border border-gray-100 shadow-sm">
               <div className="grid grid-cols-2 gap-2 sm:gap-4">
                 <div className="text-xs sm:text-sm text-left text-gray-500">Subtotal</div>
-                <div className="text-xs sm:text-sm font-medium text-gray-900 text-right">₹{orderData.grandTotal?.toFixed(2) || '0.00'}</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-900 text-right">₹{typeof orderData.grandTotal === 'number' ? orderData.grandTotal.toFixed(2) : '0.00'}</div>
 
                 <div className="text-xs sm:text-sm text-left text-gray-500 border-b border-gray-200 pb-2">Tax</div>
                 <div className="text-xs sm:text-sm font-medium text-gray-900 text-right border-b border-gray-200 pb-2">₹0.00</div>
 
                 <div className="text-xs sm:text-sm text-left font-bold text-gray-900 pt-2">Total</div>
-                <div className="text-base sm:text-lg font-bold text-gray-900 text-right pt-2">₹{orderData.grandTotal?.toFixed(2) || '0.00'}</div>
+                <div className="text-base sm:text-lg font-bold text-gray-900 text-right pt-2">₹{typeof orderData.grandTotal === 'number' ? orderData.grandTotal.toFixed(2) : '0.00'}</div>
 
                 <div className="text-xs sm:text-sm text-left text-gray-500">Amount Paid</div>
-                <div className="text-xs sm:text-sm font-medium text-gray-900 text-right">₹{orderData.amountPaid?.toFixed(2) || '0.00'}</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-900 text-right">₹{(typeof orderData.amountPaid === 'number' ? orderData.amountPaid.toFixed(2) : '0.00')}</div>
 
                 <div className={`text-xs sm:text-sm text-left font-bold ${isPaid ? 'text-green-600' : 'text-red-600'} border-t border-gray-200 pt-2`}>Balance Due</div>
                 <div className={`text-base sm:text-lg font-bold ${isPaid ? 'text-green-600' : 'text-red-600'} text-right border-t border-gray-200 pt-2`}>

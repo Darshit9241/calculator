@@ -491,17 +491,12 @@ const ClientList = () => {
                       <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Payments</p>
                     </div>
                     
-                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm transform transition-all hover:scale-105`}>
-                      <div className="flex items-center mb-2">
-                        <div className="mr-2 p-1.5 rounded-full bg-amber-500/10">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </div>
-                        <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Pending</p>
-                      </div>
+                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
+                      <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Pending</p>
                       <p className="text-lg sm:text-2xl font-bold text-amber-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
-                        const pendingAmount = (client.grandTotal || 0) - (client.amountPaid || 0);
+                        const grandTotal = typeof client.grandTotal === 'number' ? client.grandTotal : 0;
+                        const amountPaid = typeof client.amountPaid === 'number' ? client.amountPaid : 0;
+                        const pendingAmount = grandTotal - amountPaid;
                         return total + (pendingAmount > 0 ? pendingAmount : 0);
                       }, 0).toFixed(2)}</p>
                       <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-amber-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
@@ -618,7 +613,10 @@ const ClientList = () => {
                   
                   <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
                     <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Received</p>
-                    <p className="text-lg sm:text-2xl font-bold text-emerald-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => total + (client.amountPaid || 0), 0).toFixed(2)}</p>
+                    <p className="text-lg sm:text-2xl font-bold text-emerald-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
+                      const amountPaid = typeof client.amountPaid === 'number' ? client.amountPaid : 0;
+                      return total + amountPaid;
+                    }, 0).toFixed(2)}</p>
                     <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-emerald-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
                     <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Payments</p>
                   </div>
@@ -626,7 +624,9 @@ const ClientList = () => {
                   <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
                     <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Pending</p>
                     <p className="text-lg sm:text-2xl font-bold text-amber-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
-                      const pendingAmount = (client.grandTotal || 0) - (client.amountPaid || 0);
+                      const grandTotal = typeof client.grandTotal === 'number' ? client.grandTotal : 0;
+                      const amountPaid = typeof client.amountPaid === 'number' ? client.amountPaid : 0;
+                      const pendingAmount = grandTotal - amountPaid;
                       return total + (pendingAmount > 0 ? pendingAmount : 0);
                     }, 0).toFixed(2)}</p>
                     <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-amber-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
@@ -926,10 +926,10 @@ const ClientList = () => {
                                 <p className="text-white text-sm font-medium truncate">{product.name || 'Unnamed Product'}</p>
                                 <div className="flex items-center mt-1">
                                   <span className="text-xs text-slate-400">
-                                    {product.count} × ₹{parseFloat(product.price).toFixed(2)} = 
+                                    {product.count} × ₹{typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)} = 
                                   </span>
                                   <span className="text-xs text-emerald-400 ml-1 font-medium">
-                                    ₹{(product.count * parseFloat(product.price)).toFixed(2)}
+                                    ₹{(product.count * (typeof product.price === 'number' ? product.price : parseFloat(product.price || 0))).toFixed(2)}
                                   </span>
                                 </div>
                               </div>
@@ -1063,16 +1063,20 @@ const ClientList = () => {
                   <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 xs:gap-3">
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-row xs:flex-col justify-between xs:justify-start`}>
                       <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total:</p>
-                      <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm sm:text-base`}>₹{client.grandTotal?.toFixed(2) || '0.00'}</p>
+                      <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm sm:text-base`}>₹{typeof client.grandTotal === 'number' ? client.grandTotal.toFixed(2) : '0.00'}</p>
                     </div>
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-row xs:flex-col justify-between xs:justify-start`}>
-                      <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Paid:</p>
-                      <p className="font-medium text-emerald-500 text-sm sm:text-base">₹{client.amountPaid?.toFixed(2) || '0.00'}</p>
+                      <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Amount Paid:</p>
+                      <p className="font-medium text-emerald-500 text-sm sm:text-base">₹{typeof client.amountPaid === 'number' ? client.amountPaid.toFixed(2) : '0.00'}</p>
                     </div>
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-row xs:flex-col justify-between xs:justify-start`}>
-                      <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Balance:</p>
-                      <p className={`font-medium text-sm sm:text-base ${(client.grandTotal - (client.amountPaid || 0)) <= 0 ? 'text-sky-500' : 'text-amber-500'}`}>
-                        ₹{(client.grandTotal - (client.amountPaid || 0)).toFixed(2)}
+                      <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Balance Due:</p>
+                      <p className={`font-medium text-sm sm:text-base ${
+                        ((typeof client.grandTotal === 'number' ? client.grandTotal : 0) - 
+                        (typeof client.amountPaid === 'number' ? client.amountPaid : 0)) <= 0 ? 'text-sky-500' : 'text-amber-500'
+                      }`}>
+                        ₹{((typeof client.grandTotal === 'number' ? client.grandTotal : 0) - 
+                          (typeof client.amountPaid === 'number' ? client.amountPaid : 0)).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -1095,7 +1099,7 @@ const ClientList = () => {
                                 {product.name || 'Unnamed Product'}
                               </span>
                               <span className={`${isDarkMode ? 'text-slate-400' : 'text-gray-500'} whitespace-nowrap text-xs ${isDarkMode ? 'bg-white/10' : 'bg-gray-100'} px-2 py-0.5 rounded ml-2`}>
-                                {product.count} × ₹{parseFloat(product.price).toFixed(2)}
+                                {product.count} × ₹{typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}
                               </span>
                             </li>
                           ))}
