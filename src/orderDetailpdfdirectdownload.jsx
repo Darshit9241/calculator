@@ -145,21 +145,15 @@ const OrderDetail = () => {
         <div ref={targetRef} className="px-4 sm:px-6 md:px-8 py-6 sm:py-8">
           {/* Company Logo and Invoice Title */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-4 border-b">
-            <div className="flex items-start sm:items-center flex-col sm:flex-row mb-4 md:mb-0">
+            <div className="flex items-start sm:items-center sm:flex-row mb-4 md:mb-0 w-full md:w-auto justify-between">
               <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-2.5 rounded-lg mr-3 shadow-md flex-shrink-0 mb-3 sm:mb-0">
                 <svg className="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Company Name</h1>
-                <p className="text-gray-500 text-xs sm:text-sm">123 Business Address, City, State, ZIP</p>
-              </div>
-            </div>
-            <div className="text-right w-full md:w-auto">
-              <div className="inline-block bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 rounded-lg border border-gray-100">
-                <h2 className="text-2xl sm:text-3xl font-bold text-indigo-600">INVOICE</h2>
-                <p className="text-gray-500 mt-1 text-xs sm:text-sm font-medium">#{orderData.id}</p>
+              <div className="text-center sm:text-left">
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Company Name</h1>
+                <p className="text-gray-500 text-xs sm:text-sm mt-1">123 Business Address, City, State, ZIP</p>
               </div>
             </div>
           </div>
@@ -167,13 +161,13 @@ const OrderDetail = () => {
           {/* Bill To & Invoice Info */}
           <div className="flex flex-col md:flex-row justify-between mb-8 gap-6">
             <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-100 md:w-1/2">
-              <h3 className="text-gray-500 font-medium mb-3 text-xs sm:text-sm uppercase tracking-wider">Client Name</h3>
-              <p className="text-lg sm:text-xl font-bold text-gray-800 mb-2">{orderData.clientName || 'Client Name'}</p>
+              <h3 className="text-gray-500 font-medium mb-3 text-xs sm:text-sm uppercase tracking-wider">Client Name: <span className="text-gray-800 font-semibold text-right">{orderData.clientName || 'Client Name'}</span></h3>
+              {/* <p className="text-lg sm:text-xl font-bold text-gray-800 mb-2">{orderData.clientName || 'Client Name'}</p> */}
               <p className="text-sm sm:text-base text-gray-600">{orderData.clientAddress || 'Client Address'}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-100 md:w-1/2">
               <div className="grid grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
-                <div className="text-gray-500 font-medium">Invoice Date:</div>
+                <div className="text-gray-500 font-medium text-left">Invoice Date:</div>
                 <div className="text-gray-800 font-semibold text-right">
                   {new Date(orderData.timestamp).toLocaleDateString('en-IN', {
                     year: 'numeric',
@@ -183,7 +177,7 @@ const OrderDetail = () => {
                   })}
                 </div>
 
-                <div className="text-gray-500 font-medium">Due Date:</div>
+                <div className="text-gray-500 font-medium text-left">Due Date:</div>
                 <div className="text-gray-800 font-semibold text-right">
                   {new Date(orderData.timestamp).toLocaleDateString('en-IN', {
                     year: 'numeric',
@@ -193,10 +187,10 @@ const OrderDetail = () => {
                   })}
                 </div>
 
-                <div className="text-gray-500 font-medium">Status:</div>
+                <div className="text-gray-500 font-medium text-left">Status:</div>
                 <div className="text-right">
                   <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${isPaid ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${isPaid ? 'text-green-800' : 'text-amber-800'
                       }`}
                   >
                     {isPaid ? 'Paid' : 'Pending'}
@@ -204,7 +198,6 @@ const OrderDetail = () => {
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* Invoice Items Table */}
