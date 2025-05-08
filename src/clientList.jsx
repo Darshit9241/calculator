@@ -13,6 +13,13 @@ const customStyles = `
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out forwards;
 }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-pulse-custom {
+  animation: pulse 2s ease-in-out infinite;
+}
 `;
 
 const ClientList = () => {
@@ -357,20 +364,23 @@ const ClientList = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'} py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200`}>
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-800' : 'bg-gradient-to-br from-gray-100 to-white'} py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200`}>
       {/* Inject custom styles */}
       <style>{customStyles}</style>
       
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className={`backdrop-blur-md ${isDarkMode ? 'bg-white/10' : 'bg-white/80'} rounded-xl shadow-2xl p-6 mb-8 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
+        <div className={`backdrop-blur-md ${isDarkMode ? 'bg-black/30' : 'bg-white/80'} rounded-2xl shadow-2xl p-6 mb-8 border ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <div className="flex items-center justify-between w-full sm:w-auto">
               <h1 className={`text-lg sm:text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center`}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mr-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Siyaram Lace
+                <div className="relative mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl -z-10"></div>
+                </div>
+                <span className="bg-gradient-to-r from-emerald-500 to-teal-400 inline-block text-transparent bg-clip-text">Siyaram Lace</span>
               </h1>
               <div className="flex items-center gap-2 pl-5">
                 {isSmallScreen && (
@@ -390,7 +400,7 @@ const ClientList = () => {
               {savedClients.length > 0 && (
                 <button 
                   onClick={deleteAllOrders}
-                  className="flex items-center justify-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-lg hover:shadow-red-500/30 transition-all duration-200 font-medium"
+                  className="flex items-center justify-center px-4 py-2 bg-red-500/90 hover:bg-red-600 text-white rounded-xl shadow-lg hover:shadow-red-500/30 transition-all duration-200 font-medium"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -400,7 +410,7 @@ const ClientList = () => {
               )}
               <Link 
                 to="/" 
-                className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg shadow-lg hover:shadow-emerald-500/30 transition-all duration-200 font-medium"
+                className="flex items-center justify-center px-4 py-2 bg-gradient-to-br from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all duration-200 font-medium"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
@@ -437,9 +447,9 @@ const ClientList = () => {
 
               {/* Stats Content */}
               {isStatsOpen && (
-                <div className={`backdrop-blur-md ${isDarkMode ? 'bg-white/5' : 'bg-white/95'} rounded-b-lg shadow-lg p-4 mb-4 border ${isDarkMode ? 'border-emerald-600/40' : 'border-emerald-100'} border-t-0 animate-fadeIn`}>
+                <div className={`backdrop-blur-md ${isDarkMode ? 'bg-black/40' : 'bg-white/95'} rounded-b-xl shadow-lg p-4 mb-4 border ${isDarkMode ? 'border-emerald-600/40' : 'border-emerald-100'} border-t-0 animate-fadeIn`}>
                   <div className="space-y-3">
-                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
+                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
                       <div className="bg-blue-500/10 rounded-full p-2 mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -453,7 +463,7 @@ const ClientList = () => {
                       </div>
                     </div>
                     
-                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
+                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
                       <div className="bg-indigo-500/10 rounded-full p-2 mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -467,35 +477,35 @@ const ClientList = () => {
                       </div>
                     </div>
                     
-                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
-                      <div className="bg-emerald-500/10 rounded-full p-2 mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
+                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm transform transition-all hover:scale-105`}>
+                      <div className="flex items-center mb-2">
+                        <div className="mr-2 p-1.5 rounded-full bg-emerald-500/10">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
                         <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Received</p>
-                        <p className="text-lg sm:text-2xl font-bold text-emerald-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => total + (client.amountPaid || 0), 0).toFixed(2)}</p>
-                        <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-emerald-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
-                        <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Payments</p>
                       </div>
+                      <p className="text-lg sm:text-2xl font-bold text-emerald-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => total + (client.amountPaid || 0), 0).toFixed(2)}</p>
+                      <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-emerald-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
+                      <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Payments</p>
                     </div>
                     
-                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
-                      <div className="bg-amber-500/10 rounded-full p-2 mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
+                    <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm transform transition-all hover:scale-105`}>
+                      <div className="flex items-center mb-2">
+                        <div className="mr-2 p-1.5 rounded-full bg-amber-500/10">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
                         <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Pending</p>
-                        <p className="text-lg sm:text-2xl font-bold text-amber-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
-                          const pendingAmount = (client.grandTotal || 0) - (client.amountPaid || 0);
-                          return total + (pendingAmount > 0 ? pendingAmount : 0);
-                        }, 0).toFixed(2)}</p>
-                        <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-amber-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
-                        <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>To collect</p>
                       </div>
+                      <p className="text-lg sm:text-2xl font-bold text-amber-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
+                        const pendingAmount = (client.grandTotal || 0) - (client.amountPaid || 0);
+                        return total + (pendingAmount > 0 ? pendingAmount : 0);
+                      }, 0).toFixed(2)}</p>
+                      <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-amber-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
+                      <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>To collect</p>
                     </div>
                   </div>
                 </div>
@@ -527,7 +537,7 @@ const ClientList = () => {
 
               {/* Filters Content */}
               {isFiltersOpen && (
-                <div className={`backdrop-blur-md ${isDarkMode ? 'bg-white/5' : 'bg-white/95'} rounded-b-lg shadow-lg p-4 mb-4 border ${isDarkMode ? 'border-amber-600/40' : 'border-amber-100'} border-t-0 animate-fadeIn`}>
+                <div className={`backdrop-blur-md ${isDarkMode ? 'bg-black/40' : 'bg-white/95'} rounded-b-xl shadow-lg p-4 mb-4 border ${isDarkMode ? 'border-amber-600/40' : 'border-amber-100'} border-t-0 animate-fadeIn`}>
                   <div className="space-y-3">
                     <button
                       onClick={() => {
@@ -630,9 +640,9 @@ const ClientList = () => {
                 <div className="grid grid-cols-3 gap-2 sm:gap-4">
                   <button
                     onClick={() => setActiveFilter('all')}
-                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center ${
+                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${
                       activeFilter === 'all'
-                        ? `${isDarkMode ? 'bg-emerald-500' : 'bg-emerald-600'} text-white shadow-md shadow-emerald-500/20`
+                        ? `bg-gradient-to-br ${isDarkMode ? 'from-emerald-500 to-teal-600' : 'from-emerald-500 to-teal-600'} text-white shadow-md shadow-emerald-500/20 border border-emerald-400/30`
                         : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
                     }`}
                   >
@@ -641,9 +651,9 @@ const ClientList = () => {
                   </button>
                   <button
                     onClick={() => setActiveFilter('pending')}
-                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center ${
+                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${
                       activeFilter === 'pending'
-                        ? `${isDarkMode ? 'bg-amber-500' : 'bg-amber-600'} text-white shadow-md shadow-amber-500/20`
+                        ? `bg-gradient-to-br ${isDarkMode ? 'from-amber-500 to-orange-600' : 'from-amber-500 to-orange-600'} text-white shadow-md shadow-amber-500/20 border border-amber-400/30`
                         : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
                     }`}
                   >
@@ -652,9 +662,9 @@ const ClientList = () => {
                   </button>
                   <button
                     onClick={() => setActiveFilter('cleared')}
-                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center ${
+                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${
                       activeFilter === 'cleared'
-                        ? `${isDarkMode ? 'bg-sky-500' : 'bg-sky-600'} text-white shadow-md shadow-sky-500/20`
+                        ? `bg-gradient-to-br ${isDarkMode ? 'from-sky-500 to-blue-600' : 'from-sky-500 to-blue-600'} text-white shadow-md shadow-sky-500/20 border border-sky-400/30`
                         : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
                     }`}
                   >
@@ -669,22 +679,22 @@ const ClientList = () => {
           {/* Search bar with improved design */}
           <div className="mb-6">
             <div className="relative">
-              <input
-                type="text"
-                placeholder="Search by"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full px-4 py-3 ${isDarkMode ? 'bg-white/5' : 'bg-white'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} rounded-lg ${isDarkMode ? 'text-white placeholder-slate-400' : 'text-gray-900 placeholder-gray-400'} focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 shadow-sm`}
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
+              <input
+                type="text"
+                placeholder="Search by name or ID..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={`w-full pl-10 pr-10 py-3 ${isDarkMode ? 'bg-white/5' : 'bg-white'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} rounded-xl ${isDarkMode ? 'text-white placeholder-slate-400' : 'text-gray-900 placeholder-gray-400'} focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 shadow-sm`}
+              />
               {searchQuery && (
                 <button 
                   onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-0 flex items-center pr-10"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -710,7 +720,7 @@ const ClientList = () => {
         {/* Edit Client Modal */}
         {editingClient && (
           <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg border border-white/10 overflow-hidden hide-scrollbar animate-fadeIn">
+            <div className="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg border border-slate-700 overflow-hidden hide-scrollbar animate-fadeIn">
               <div className="p-5 bg-gradient-to-r from-slate-700 to-slate-800 border-b border-slate-600/30">
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold text-lg text-white">Edit Client Order</h3>
@@ -735,7 +745,12 @@ const ClientList = () => {
                   }`}
                   onClick={() => setActiveTab('general')}
                 >
-                  General Info
+                  <div className="flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    General Info
+                  </div>
                 </button>
                 <button
                   className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
@@ -745,10 +760,15 @@ const ClientList = () => {
                   }`}
                   onClick={() => setActiveTab('products')}
                 >
-                  Products
-                  <span className="ml-2 px-1.5 py-0.5 bg-white/10 rounded text-xs">
-                    {editFormData.products.length}
-                  </span>
+                  <div className="flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    Products
+                    <span className="ml-2 px-1.5 py-0.5 bg-white/10 rounded-full text-xs">
+                      {editFormData.products.length}
+                    </span>
+                  </div>
                 </button>
               </div>
               
@@ -762,7 +782,7 @@ const ClientList = () => {
                         name="clientName"
                         value={editFormData.clientName}
                         onChange={handleEditInputChange}
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                       />
                     </div>
                     
@@ -774,16 +794,21 @@ const ClientList = () => {
                             total + (parseFloat(product.price) || 0) * (parseFloat(product.count) || 0), 0).toFixed(2)}
                         </span>
                       </label>
-                      <input
-                        type="number"
-                        name="amountPaid"
-                        value={editFormData.amountPaid}
-                        onChange={handleEditInputChange}
-                        min="0"
-                        step="0.01"
-                        placeholder="0.00"
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
-                      />
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <span className="text-slate-400">₹</span>
+                        </div>
+                        <input
+                          type="number"
+                          name="amountPaid"
+                          value={editFormData.amountPaid}
+                          onChange={handleEditInputChange}
+                          min="0"
+                          step="0.01"
+                          placeholder="0.00"
+                          className="w-full pl-8 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                        />
+                      </div>
                     </div>
                     
                     <div>
@@ -792,7 +817,7 @@ const ClientList = () => {
                         name="paymentStatus"
                         value={editFormData.paymentStatus}
                         onChange={handleEditInputChange}
-                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                       >
                         <option value="pending">Pending</option>
                         <option value="cleared">Cleared</option>
@@ -803,8 +828,11 @@ const ClientList = () => {
                   <div className="p-5">
                     {/* Product editing interface */}
                     {editingProduct ? (
-                      <div className="bg-white/5 rounded-lg p-4 border border-white/10 mb-4 animate-fadeIn">
-                        <h4 className="text-white font-medium mb-3">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10 mb-4 animate-fadeIn">
+                        <h4 className="text-white font-medium mb-3 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
                           {editingProduct.index !== undefined && editingProduct.name 
                             ? `Edit Product: ${editingProduct.name}`
                             : 'Add New Product'}
@@ -818,7 +846,7 @@ const ClientList = () => {
                               name="name"
                               value={productFormData.name}
                               onChange={handleProductFormChange}
-                              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                               placeholder="Enter product name"
                             />
                           </div>
@@ -826,16 +854,21 @@ const ClientList = () => {
                           <div className="grid grid-cols-2 gap-3">
                             <div>
                               <label className="block text-sm font-medium text-slate-300 mb-1">Price (₹)</label>
-                              <input
-                                type="number"
-                                name="price"
-                                value={productFormData.price}
-                                onChange={handleProductFormChange}
-                                min="0"
-                                step="0.01"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
-                                placeholder="0.00"
-                              />
+                              <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                  <span className="text-slate-400 text-sm">₹</span>
+                                </div>
+                                <input
+                                  type="number"
+                                  name="price"
+                                  value={productFormData.price}
+                                  onChange={handleProductFormChange}
+                                  min="0"
+                                  step="0.01"
+                                  className="w-full pl-7 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                                  placeholder="0.00"
+                                />
+                              </div>
                             </div>
                             
                             <div>
@@ -846,7 +879,7 @@ const ClientList = () => {
                                 value={productFormData.count}
                                 onChange={handleProductFormChange}
                                 min="1"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                                 placeholder="1"
                               />
                             </div>
@@ -856,14 +889,14 @@ const ClientList = () => {
                             <button
                               type="button"
                               onClick={cancelProductEdit}
-                              className="px-3 py-1.5 text-sm bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg transition-colors"
+                              className="px-3 py-1.5 text-sm bg-white/5 hover:bg-white/10 text-slate-300 rounded-xl transition-colors"
                             >
                               Cancel
                             </button>
                             <button
                               type="button"
                               onClick={saveProductChanges}
-                              className="px-3 py-1.5 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+                              className="px-3 py-1.5 text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl transition-colors"
                             >
                               {editingProduct.index !== undefined && editingProduct.name ? 'Update Product' : 'Add Product'}
                             </button>
@@ -874,9 +907,9 @@ const ClientList = () => {
                       <button
                         type="button"
                         onClick={addNewProduct}
-                        className="w-full py-2 px-4 mb-4 bg-white/5 hover:bg-white/10 border border-dashed border-white/20 rounded-lg text-sm text-slate-300 flex items-center justify-center transition-colors"
+                        className="w-full py-2 px-4 mb-4 bg-white/5 hover:bg-white/10 border border-dashed border-white/20 rounded-xl text-sm text-slate-300 flex items-center justify-center transition-colors"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                         </svg>
                         Add New Product
@@ -888,7 +921,7 @@ const ClientList = () => {
                       {editFormData.products.length > 0 ? (
                         <ul className="space-y-2">
                           {editFormData.products.map((product, index) => (
-                            <li key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10">
+                            <li key={index} className="flex items-center justify-between bg-white/5 rounded-xl p-3 border border-white/10 hover:border-emerald-500/30 transition-colors">
                               <div className="flex-1 min-w-0">
                                 <p className="text-white text-sm font-medium truncate">{product.name || 'Unnamed Product'}</p>
                                 <div className="flex items-center mt-1">
@@ -904,7 +937,7 @@ const ClientList = () => {
                                 <button
                                   type="button"
                                   onClick={() => editProduct(product, index)}
-                                  className="p-1.5 text-indigo-400 hover:bg-indigo-500/10 rounded-md transition-colors"
+                                  className="p-1.5 text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -913,7 +946,7 @@ const ClientList = () => {
                                 <button
                                   type="button"
                                   onClick={() => deleteProduct(index)}
-                                  className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+                                  className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -924,7 +957,10 @@ const ClientList = () => {
                           ))}
                         </ul>
                       ) : (
-                        <div className="py-4 text-center text-slate-500 text-sm">
+                        <div className="py-4 text-center text-slate-500 text-sm flex flex-col items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-slate-600/50 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                          </svg>
                           No products have been added yet.
                         </div>
                       )}
@@ -937,13 +973,13 @@ const ClientList = () => {
                     <button
                       type="button"
                       onClick={closeEditForm}
-                      className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors"
+                      className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg shadow-lg hover:shadow-emerald-500/30 transition-all"
+                      className="px-4 py-2 bg-gradient-to-br from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all"
                     >
                       Save Changes
                     </button>
