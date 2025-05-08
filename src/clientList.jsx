@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from './components/ThemeToggle';
 import { useTheme } from './context/ThemeContext';
+import { fetchAllClients, deleteClient, clearClientPayment, updateClient } from './api';
 
 // Custom CSS for animations
 const customStyles = `
@@ -85,16 +86,8 @@ const ClientList = () => {
   const fetchClients = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram');
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch orders');
-      }
-      
-      const data = await response.json();
-      // Sort data by timestamp in descending order (newest first)
-      const sortedData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      setSavedClients(sortedData);
+      const data = await fetchAllClients();
+      setSavedClients(data);
       setError('');
     } catch (err) {
       setError('Error loading client orders. Please try again.');
@@ -116,13 +109,7 @@ const ClientList = () => {
     }
     
     try {
-      const response = await fetch(`https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete order');
-      }
+      await deleteClient(id);
       
       // Update the UI by removing the deleted order
       setSavedClients(savedClients.filter(client => client.id !== id));
@@ -145,24 +132,7 @@ const ClientList = () => {
       const clientToUpdate = savedClients.find(client => client.id === id);
       if (!clientToUpdate) return;
       
-      // Update the payment status to cleared
-      const updatedClient = {
-        ...clientToUpdate,
-        paymentStatus: 'cleared',
-        amountPaid: clientToUpdate.grandTotal // Set amount paid to the grand total
-      };
-      
-      const response = await fetch(`https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedClient),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update order payment status');
-      }
+      const updatedClient = await clearClientPayment(clientToUpdate);
       
       // Update the UI with the updated order
       setSavedClients(savedClients.map(client => 
@@ -189,13 +159,7 @@ const ClientList = () => {
       // Delete each order one by one
       const deletePromises = savedClients.map(async (client) => {
         try {
-          const response = await fetch(`https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram/${client.id}`, {
-            method: 'DELETE',
-          });
-          
-          if (!response.ok) {
-            throw new Error(`Failed to delete order ${client.id}`);
-          }
+          await deleteClient(client.id);
           return true;
         } catch (err) {
           console.error(`Error deleting order ${client.id}:`, err);
@@ -374,17 +338,7 @@ const ClientList = () => {
         grandTotal: grandTotal
       };
       
-      const response = await fetch(`https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram/${editingClient.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedClient),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update client details');
-      }
+      await updateClient(updatedClient);
       
       // Update the UI with the updated client
       setSavedClients(savedClients.map(client => 
