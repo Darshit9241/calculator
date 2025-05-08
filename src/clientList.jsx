@@ -26,7 +26,7 @@ const ClientList = () => {
   const [editingClient, setEditingClient] = useState(null);
   const [editFormData, setEditFormData] = useState({
     clientName: '',
-    amountPaid: 0,
+    amountPaid: '',
     paymentStatus: 'pending',
     products: []
   });
@@ -229,7 +229,7 @@ const ClientList = () => {
     setEditingClient(client);
     setEditFormData({
       clientName: client.clientName || '',
-      amountPaid: client.amountPaid || 0,
+      amountPaid: client.amountPaid || '',
       paymentStatus: client.paymentStatus || 'pending',
       products: client.products ? [...client.products] : []
     });
@@ -240,7 +240,7 @@ const ClientList = () => {
     setEditingClient(null);
     setEditFormData({
       clientName: '',
-      amountPaid: 0,
+      amountPaid: '',
       paymentStatus: 'pending',
       products: []
     });
@@ -258,9 +258,9 @@ const ClientList = () => {
     if (name === 'amountPaid') {
       setEditFormData({ 
         ...editFormData, 
-        [name]: parseFloat(value) || 0,
+        [name]: value === '' ? '' : parseFloat(value) || 0,
         // If amount paid equals grand total, automatically set payment status to cleared
-        paymentStatus: parseFloat(value) >= (editingClient?.grandTotal || 0) ? 'cleared' : 'pending'
+        paymentStatus: value !== '' && parseFloat(value) >= (editingClient?.grandTotal || 0) ? 'cleared' : 'pending'
       });
     } else {
       setEditFormData({ ...editFormData, [name]: value });
@@ -756,7 +756,7 @@ const ClientList = () => {
         {/* Edit Client Modal */}
         {editingClient && (
           <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg border border-white/10 overflow-hidden animate-fadeIn">
+            <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg border border-white/10 overflow-hidden hide-scrollbar animate-fadeIn">
               <div className="p-5 bg-gradient-to-r from-slate-700 to-slate-800 border-b border-slate-600/30">
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold text-lg text-white">Edit Client Order</h3>
@@ -827,6 +827,7 @@ const ClientList = () => {
                         onChange={handleEditInputChange}
                         min="0"
                         step="0.01"
+                        placeholder="0.00"
                         className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                       />
                     </div>
@@ -929,7 +930,7 @@ const ClientList = () => {
                     )}
                     
                     {/* Products list */}
-                    <div className="max-h-60 overflow-y-auto pr-1">
+                    <div className="max-h-60 overflow-y-auto pr-1 hide-scrollbar">
                       {editFormData.products.length > 0 ? (
                         <ul className="space-y-2">
                           {editFormData.products.map((product, index) => (
