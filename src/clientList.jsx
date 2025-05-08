@@ -892,7 +892,7 @@ const ClientList = () => {
                     </div>
                     
                     {client.products && client.products.length > 0 ? (
-                      <div className="max-h-32 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
+                      <div className="max-h-32 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800 hide-scrollbar">
                         <ul className="space-y-2">
                           {client.products.slice().reverse().map((product, index) => (
                             <li key={index} className="flex justify-between items-center text-sm bg-white/5 rounded-lg p-2 border border-white/5">
