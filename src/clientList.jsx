@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+// Custom CSS for animations
+const customStyles = `
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+`;
+
 const ClientList = () => {
   const [savedClients, setSavedClients] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
@@ -9,6 +20,20 @@ const ClientList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [editingClient, setEditingClient] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    clientName: '',
+    amountPaid: 0,
+    paymentStatus: 'pending',
+    products: []
+  });
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [productFormData, setProductFormData] = useState({
+    name: '',
+    price: 0,
+    count: 1
+  });
+  const [activeTab, setActiveTab] = useState('general');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -193,13 +218,189 @@ const ClientList = () => {
       }
     }
   };
-  
-  const editOrder = (id) => {
-    navigate(`/edit/${id}`);
+
+  const editClient = (client) => {
+    setEditingClient(client);
+    setEditFormData({
+      clientName: client.clientName || '',
+      amountPaid: client.amountPaid || 0,
+      paymentStatus: client.paymentStatus || 'pending',
+      products: client.products ? [...client.products] : []
+    });
+    setActiveTab('general');
+  };
+
+  const closeEditForm = () => {
+    setEditingClient(null);
+    setEditFormData({
+      clientName: '',
+      amountPaid: 0,
+      paymentStatus: 'pending',
+      products: []
+    });
+    setEditingProduct(null);
+    setProductFormData({
+      name: '',
+      price: 0,
+      count: 1
+    });
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    // For numeric fields, convert to number
+    if (name === 'amountPaid') {
+      setEditFormData({ 
+        ...editFormData, 
+        [name]: parseFloat(value) || 0,
+        // If amount paid equals grand total, automatically set payment status to cleared
+        paymentStatus: parseFloat(value) >= (editingClient?.grandTotal || 0) ? 'cleared' : 'pending'
+      });
+    } else {
+      setEditFormData({ ...editFormData, [name]: value });
+    }
+  };
+
+  // Product-related functions
+  const editProduct = (product, index) => {
+    setEditingProduct({ ...product, index });
+    setProductFormData({
+      name: product.name || '',
+      price: product.price || 0,
+      count: product.count || 1
+    });
+  };
+
+  const cancelProductEdit = () => {
+    setEditingProduct(null);
+    setProductFormData({
+      name: '',
+      price: 0,
+      count: 1
+    });
+  };
+
+  const handleProductFormChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'price' || name === 'count') {
+      setProductFormData({
+        ...productFormData,
+        [name]: parseFloat(value) || 0
+      });
+    } else {
+      setProductFormData({
+        ...productFormData,
+        [name]: value
+      });
+    }
+  };
+
+  const saveProductChanges = () => {
+    if (!editingProduct) return;
+    
+    const updatedProducts = [...editFormData.products];
+    updatedProducts[editingProduct.index] = {
+      ...editingProduct,
+      name: productFormData.name,
+      price: productFormData.price,
+      count: productFormData.count
+    };
+    
+    // Recalculate the grand total
+    const grandTotal = updatedProducts.reduce((total, product) => 
+      total + (parseFloat(product.price) || 0) * (parseFloat(product.count) || 0), 0);
+    
+    setEditFormData({
+      ...editFormData,
+      products: updatedProducts,
+      grandTotal: grandTotal
+    });
+    
+    // Reset product form
+    cancelProductEdit();
+  };
+
+  const deleteProduct = (index) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) {
+      return;
+    }
+    
+    const updatedProducts = [...editFormData.products];
+    updatedProducts.splice(index, 1);
+    
+    // Recalculate the grand total
+    const grandTotal = updatedProducts.reduce((total, product) => 
+      total + (parseFloat(product.price) || 0) * (parseFloat(product.count) || 0), 0);
+    
+    setEditFormData({
+      ...editFormData,
+      products: updatedProducts,
+      grandTotal: grandTotal
+    });
+  };
+
+  const addNewProduct = () => {
+    setEditingProduct({ name: '', price: 0, count: 1, index: editFormData.products.length });
+    setProductFormData({
+      name: '',
+      price: 0,
+      count: 1
+    });
+  };
+
+  const saveClientChanges = async (e) => {
+    e.preventDefault();
+    
+    if (!editingClient) return;
+    
+    try {
+      // Recalculate the grand total
+      const grandTotal = editFormData.products.reduce((total, product) => 
+        total + (parseFloat(product.price) || 0) * (parseFloat(product.count) || 0), 0);
+      
+      // Prepare updated client data
+      const updatedClient = {
+        ...editingClient,
+        clientName: editFormData.clientName,
+        amountPaid: editFormData.amountPaid,
+        paymentStatus: editFormData.paymentStatus,
+        products: editFormData.products,
+        grandTotal: grandTotal
+      };
+      
+      const response = await fetch(`https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram/${editingClient.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedClient),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update client details');
+      }
+      
+      // Update the UI with the updated client
+      setSavedClients(savedClients.map(client => 
+        client.id === editingClient.id ? updatedClient : client
+      ));
+      
+      // Close the edit form
+      closeEditForm();
+    } catch (err) {
+      setError('Failed to update client details. Please try again.');
+      console.error(err);
+      
+      // Clear error after 3 seconds
+      setTimeout(() => setError(''), 3000);
+    }
   };
 
   return (
     <div className="min-h-screen bg-slate-900 py-8 px-4 sm:px-6 lg:px-8">
+      {/* Inject custom styles */}
+      <style>{customStyles}</style>
+      
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="backdrop-blur-md bg-white/10 rounded-xl shadow-2xl p-6 mb-8 border border-white/10">
@@ -348,6 +549,252 @@ const ClientList = () => {
           </div>
         )}
 
+        {/* Edit Client Modal */}
+        {editingClient && (
+          <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg border border-white/10 overflow-hidden animate-fadeIn">
+              <div className="p-5 bg-gradient-to-r from-slate-700 to-slate-800 border-b border-slate-600/30">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-lg text-white">Edit Client Order</h3>
+                  <button 
+                    onClick={closeEditForm}
+                    className="text-slate-400 hover:text-white transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              
+              {/* Tabs for General Info and Products */}
+              <div className="flex border-b border-slate-700">
+                <button
+                  className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+                    activeTab === 'general'
+                      ? 'bg-white/5 text-white border-b-2 border-emerald-500'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                  onClick={() => setActiveTab('general')}
+                >
+                  General Info
+                </button>
+                <button
+                  className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+                    activeTab === 'products'
+                      ? 'bg-white/5 text-white border-b-2 border-emerald-500'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                  onClick={() => setActiveTab('products')}
+                >
+                  Products
+                  <span className="ml-2 px-1.5 py-0.5 bg-white/10 rounded text-xs">
+                    {editFormData.products.length}
+                  </span>
+                </button>
+              </div>
+              
+              <form onSubmit={saveClientChanges}>
+                {activeTab === 'general' ? (
+                  <div className="p-5 space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-1">Client Name</label>
+                      <input
+                        type="text"
+                        name="clientName"
+                        value={editFormData.clientName}
+                        onChange={handleEditInputChange}
+                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-1">
+                        Amount Paid (₹)
+                        <span className="text-xs text-slate-500 ml-2">
+                          Total: ₹{editFormData.products.reduce((total, product) => 
+                            total + (parseFloat(product.price) || 0) * (parseFloat(product.count) || 0), 0).toFixed(2)}
+                        </span>
+                      </label>
+                      <input
+                        type="number"
+                        name="amountPaid"
+                        value={editFormData.amountPaid}
+                        onChange={handleEditInputChange}
+                        min="0"
+                        step="0.01"
+                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-1">Payment Status</label>
+                      <select
+                        name="paymentStatus"
+                        value={editFormData.paymentStatus}
+                        onChange={handleEditInputChange}
+                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="cleared">Cleared</option>
+                      </select>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-5">
+                    {/* Product editing interface */}
+                    {editingProduct ? (
+                      <div className="bg-white/5 rounded-lg p-4 border border-white/10 mb-4 animate-fadeIn">
+                        <h4 className="text-white font-medium mb-3">
+                          {editingProduct.index !== undefined && editingProduct.name 
+                            ? `Edit Product: ${editingProduct.name}`
+                            : 'Add New Product'}
+                        </h4>
+                        
+                        <div className="space-y-3">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-1">Product Name</label>
+                            <input
+                              type="text"
+                              name="name"
+                              value={productFormData.name}
+                              onChange={handleProductFormChange}
+                              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                              placeholder="Enter product name"
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-300 mb-1">Price (₹)</label>
+                              <input
+                                type="number"
+                                name="price"
+                                value={productFormData.price}
+                                onChange={handleProductFormChange}
+                                min="0"
+                                step="0.01"
+                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                                placeholder="0.00"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-slate-300 mb-1">Quantity</label>
+                              <input
+                                type="number"
+                                name="count"
+                                value={productFormData.count}
+                                onChange={handleProductFormChange}
+                                min="1"
+                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                                placeholder="1"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-end gap-2 pt-2">
+                            <button
+                              type="button"
+                              onClick={cancelProductEdit}
+                              className="px-3 py-1.5 text-sm bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              onClick={saveProductChanges}
+                              className="px-3 py-1.5 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+                            >
+                              {editingProduct.index !== undefined && editingProduct.name ? 'Update Product' : 'Add Product'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={addNewProduct}
+                        className="w-full py-2 px-4 mb-4 bg-white/5 hover:bg-white/10 border border-dashed border-white/20 rounded-lg text-sm text-slate-300 flex items-center justify-center transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add New Product
+                      </button>
+                    )}
+                    
+                    {/* Products list */}
+                    <div className="max-h-60 overflow-y-auto pr-1">
+                      {editFormData.products.length > 0 ? (
+                        <ul className="space-y-2">
+                          {editFormData.products.map((product, index) => (
+                            <li key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-white text-sm font-medium truncate">{product.name || 'Unnamed Product'}</p>
+                                <div className="flex items-center mt-1">
+                                  <span className="text-xs text-slate-400">
+                                    {product.count} × ₹{parseFloat(product.price).toFixed(2)} = 
+                                  </span>
+                                  <span className="text-xs text-emerald-400 ml-1 font-medium">
+                                    ₹{(product.count * parseFloat(product.price)).toFixed(2)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex ml-4">
+                                <button
+                                  type="button"
+                                  onClick={() => editProduct(product, index)}
+                                  className="p-1.5 text-indigo-400 hover:bg-indigo-500/10 rounded-md transition-colors"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => deleteProduct(index)}
+                                  className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className="py-4 text-center text-slate-500 text-sm">
+                          No products have been added yet.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="p-5 pt-2 border-t border-slate-700/50">
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={closeEditForm}
+                      className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg shadow-lg hover:shadow-emerald-500/30 transition-all"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Loading state */}
         {loading ? (
           <div className="flex justify-center items-center py-24">
@@ -465,7 +912,7 @@ const ClientList = () => {
                   </div>
                 </div>
                 
-                {/* Card actions - improved for mobile */}
+                {/* Card actions - now with edit button */}
                 <div className="grid grid-cols-4 border-t border-slate-700/50">
                   <button 
                     onClick={() => navigate(`/order/${client.id}`)}
@@ -475,16 +922,16 @@ const ClientList = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
-                    View
+                    <span className="hidden xs:inline ml-0.5">View</span>
                   </button>
                   <button 
-                    onClick={() => editOrder(client.id)}
-                    className="py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-slate-300 hover:bg-white/10 transition-colors border-r border-slate-700/50 flex items-center justify-center"
+                    onClick={() => editClient(client)}
+                    className="py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-indigo-400 hover:bg-indigo-500/10 transition-colors border-r border-slate-700/50 flex items-center justify-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    Edit
+                    <span className="hidden xs:inline ml-0.5">Edit</span>
                   </button>
                   {client.paymentStatus !== 'cleared' ? (
                     <button 
@@ -494,14 +941,14 @@ const ClientList = () => {
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Pay
+                      <span className="hidden xs:inline ml-0.5">Pay</span>
                     </button>
                   ) : (
                     <div className="py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-sky-400 bg-sky-500/10 border-r border-slate-700/50 flex items-center justify-center opacity-70">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      Paid
+                      <span className="hidden xs:inline ml-0.5">Paid</span>
                     </div>
                   )}
                   <button 
@@ -511,7 +958,7 @@ const ClientList = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Delete
+                    <span className="hidden xs:inline ml-0.5">Delete</span>
                   </button>
                 </div>
               </div>

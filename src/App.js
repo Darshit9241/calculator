@@ -5,7 +5,6 @@ import ClientList from './clientList';
 import OrderDetail from './orderDetail';
 import Login from './Login';
 import ProtectedRoute from './ProtectedRoute';
-import OrderEdit from './OrderEdit';
 
 function App() {
   return (
@@ -20,7 +19,6 @@ function App() {
             <Route path="/" element={<Calculator />} />
             <Route path="/clients" element={<ClientList />} />
             <Route path="/order/:id" element={<OrderDetail />} />
-            <Route path="/edit/:id" element={<OrderEdit />} />
           </Route>
           
           {/* Redirect any unknown routes to login */}
