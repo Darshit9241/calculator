@@ -9,7 +9,7 @@ const OrderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toPDF, targetRef } = usePDF({
-    filename: `invoice-${id}.pdf`,
+    filename: orderData ? `${orderData.clientName}.pdf` : `invoice-${id}.pdf`,
     page: { margin: 10 }
   });
 
@@ -145,7 +145,7 @@ const OrderDetail = () => {
         <div ref={targetRef} className="px-4 sm:px-6 md:px-8 py-6 sm:py-8">
           {/* Company Logo and Invoice Title */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-4 border-b">
-            <div className="flex items-start sm:items-center sm:flex-row mb-4 md:mb-0 w-full md:w-auto justify-between">
+            <div className="flex items-start sm:items-center sm:flex-row mb-4 md:mb-0 w-full md:w-auto justify-between">
               <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-2.5 rounded-lg mr-3 shadow-md flex-shrink-0 mb-3 sm:mb-0">
                 <svg className="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
