@@ -412,7 +412,7 @@ const ClientList = () => {
         <div className={`backdrop-blur-md ${isDarkMode ? 'bg-white/10' : 'bg-white/80'} rounded-xl shadow-2xl p-6 mb-8 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <div className="flex items-center justify-between w-full sm:w-auto">
-              <h1 className={`text-xl sm:text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center`}>
+              <h1 className={`text-lg sm:text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center`}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mr-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
