@@ -923,7 +923,7 @@ const ClientList = () => {
                           {editFormData.products.map((product, index) => (
                             <li key={index} className="flex items-center justify-between bg-white/5 rounded-xl p-3 border border-white/10 hover:border-emerald-500/30 transition-colors">
                               <div className="flex-1 min-w-0">
-                                <p className="text-white text-sm font-medium truncate">{product.name || 'Unnamed Product'}</p>
+                                <p className="text-white text-sm font-medium truncate text-left">{product.name || 'Unnamed Product'}</p>
                                 <div className="flex items-center mt-1">
                                   <span className="text-xs text-slate-400">
                                     {product.count} × ₹{typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)} = 
