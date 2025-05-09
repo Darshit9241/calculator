@@ -153,8 +153,8 @@ const OrderDetail = () => {
                 </svg>
               </div>
               <div className="text-center sm:text-left">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Siyaram Lace</h1>
-                <p className="text-gray-500 text-xs sm:text-sm mt-1">jay industrial estate, IND 79, Anjana, 1, Anjana, Gujarat 395003</p>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 text-left">Siyaram Lace</h1>
+                <p className="text-gray-500 text-xs sm:text-sm mt-1 text-left">jay industrial estate, IND 79, Anjana, 1, Anjana, Gujarat 395003</p>
               </div>
             </div>
           </div>

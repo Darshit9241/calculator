@@ -104,11 +104,19 @@ const ClientList = () => {
     }
   };
 
+  // const formatDate = (timestamp) => {
+  //   return new Date(timestamp).toLocaleString(undefined, 
+  //     isSmallScreen ? { dateStyle: 'short', timeStyle: 'short' } : { dateStyle: 'medium', timeStyle: 'short' }
+  //   );
+  // };
   const formatDate = (timestamp) => {
-    return new Date(timestamp).toLocaleString(undefined, 
-      isSmallScreen ? { dateStyle: 'short', timeStyle: 'short' } : { dateStyle: 'medium', timeStyle: 'short' }
-    );
+    const options = isSmallScreen
+      ? { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Kolkata' }
+      : { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' };
+  
+    return new Date(timestamp).toLocaleString('en-IN', options);
   };
+  
 
   const deleteOrder = async (id) => {
     if (!window.confirm('Are you sure you want to delete this order?')) {
