@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AddProducts = () => {
@@ -13,6 +13,86 @@ const AddProducts = () => {
   const [amountPaid, setAmountPaid] = useState('');
   const [billMode, setBillMode] = useState('full');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  
+  // Create refs for input fields
+  const clientNameRef = useRef(null);
+  const amountPaidRef = useRef(null);
+  const productRefs = useRef({});
+
+  // Initialize product refs
+  useEffect(() => {
+    productRefs.current = {};
+  }, []);
+
+  // Handle key press events to navigate between input fields
+  const handleKeyPress = (e, id, field, isLast = false) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      
+      // Client name field handling
+      if (field === 'clientName') {
+        if (billMode === 'full') {
+          amountPaidRef.current?.focus();
+        } else {
+          // If in half bill mode, focus on first product quantity field
+          const firstProductId = products[0]?.id;
+          productRefs.current[`${firstProductId}_count`]?.focus();
+        }
+        return;
+      }
+      
+      // Amount paid field handling
+      if (field === 'amountPaid') {
+        const firstProductId = products[0]?.id;
+        productRefs.current[`${firstProductId}_${billMode === 'full' ? 'name' : 'count'}`]?.focus();
+        return;
+      }
+      
+      // Product fields handling
+      if (id) {
+        const currentIndex = products.findIndex(p => p.id === id);
+        const currentProduct = products[currentIndex];
+        
+        // Define field sequence based on bill mode
+        const fieldSequence = billMode === 'full' 
+          ? ['name', 'count', 'price'] 
+          : ['count', 'price'];
+        
+        const currentFieldIndex = fieldSequence.indexOf(field);
+        const nextField = fieldSequence[currentFieldIndex + 1];
+        
+        // Move to next field in same product
+        if (nextField) {
+          productRefs.current[`${id}_${nextField}`]?.focus();
+          return;
+        }
+        
+        // Move to next product
+        const nextProduct = products[currentIndex + 1];
+        if (nextProduct) {
+          productRefs.current[`${nextProduct.id}_${fieldSequence[0]}`]?.focus();
+          return;
+        }
+        
+        // If last product and last field, add new product and focus on it
+        if (isLast) {
+          addProduct();
+          // Focus will be set in the useEffect after adding product
+        }
+      }
+    }
+  };
+
+  // Focus on the first field of newly added product
+  useEffect(() => {
+    if (products.length > 0) {
+      const lastProduct = products[products.length - 1];
+      setTimeout(() => {
+        const firstField = billMode === 'full' ? 'name' : 'count';
+        productRefs.current[`${lastProduct.id}_${firstField}`]?.focus();
+      }, 0);
+    }
+  }, [products.length, billMode]);
 
   const handleChange = (id, field, value) => {
     const updatedProducts = products.map(product => {
@@ -283,6 +363,8 @@ const AddProducts = () => {
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 placeholder="Client Name"
+                ref={clientNameRef}
+                onKeyDown={(e) => handleKeyPress(e, null, 'clientName')}
               />
               <label
                 htmlFor="clientName"
@@ -360,6 +442,8 @@ const AddProducts = () => {
                   placeholder="0.00"
                   min="0"
                   step="0.01"
+                  ref={amountPaidRef}
+                  onKeyDown={(e) => handleKeyPress(e, null, 'amountPaid')}
                 />
                 <label
                   htmlFor="amountPaid"
@@ -400,6 +484,8 @@ const AddProducts = () => {
                           value={product.name}
                           onChange={(e) => handleChange(product.id, 'name', e.target.value)}
                           placeholder="Product name"
+                          ref={(el) => (productRefs.current[`${product.id}_name`] = el)}
+                          onKeyDown={(e) => handleKeyPress(e, product.id, 'name')}
                         />
                       </div>
                     )}
@@ -412,6 +498,8 @@ const AddProducts = () => {
                           value={product.count}
                           onChange={(e) => handleChange(product.id, 'count', e.target.value)}
                           min="0"
+                          ref={(el) => (productRefs.current[`${product.id}_count`] = el)}
+                          onKeyDown={(e) => handleKeyPress(e, product.id, 'count')}
                         />
                       </div>
                       <div>
@@ -423,6 +511,8 @@ const AddProducts = () => {
                           onChange={(e) => handleChange(product.id, 'price', e.target.value)}
                           min="0"
                           step="0.01"
+                          ref={(el) => (productRefs.current[`${product.id}_price`] = el)}
+                          onKeyDown={(e) => handleKeyPress(e, product.id, 'price', product.id === products[products.length - 1].id)}
                         />
                       </div>
                     </div>
@@ -454,6 +544,8 @@ const AddProducts = () => {
                         value={product.name}
                         onChange={(e) => handleChange(product.id, 'name', e.target.value)}
                         placeholder="Product name"
+                        ref={(el) => (productRefs.current[`${product.id}_name`] = el)}
+                        onKeyDown={(e) => handleKeyPress(e, product.id, 'name')}
                       />
                     </div>
                   )}
@@ -464,6 +556,8 @@ const AddProducts = () => {
                       value={product.count}
                       onChange={(e) => handleChange(product.id, 'count', e.target.value)}
                       min="0"
+                      ref={(el) => (productRefs.current[`${product.id}_count`] = el)}
+                      onKeyDown={(e) => handleKeyPress(e, product.id, 'count')}
                     />
                   </div>
                   <div className={`hidden md:block ${billMode === 'full' ? "md:col-span-2" : "md:col-span-4"}`}>
@@ -474,6 +568,8 @@ const AddProducts = () => {
                       onChange={(e) => handleChange(product.id, 'price', e.target.value)}
                       min="0"
                       step="0.01"
+                      ref={(el) => (productRefs.current[`${product.id}_price`] = el)}
+                      onKeyDown={(e) => handleKeyPress(e, product.id, 'price', product.id === products[products.length - 1].id)}
                     />
                   </div>
                   <div className={`hidden md:block font-medium ${billMode === 'full' ? "md:col-span-3" : "md:col-span-2"}`}>
