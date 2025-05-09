@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Calculator = () => {
+const AddProducts = () => {
   const navigate = useNavigate();
   const [clientName, setClientName] = useState('');
   const [products, setProducts] = useState([
@@ -478,4 +478,4 @@ const Calculator = () => {
   );
 };
 
-export default Calculator;
+export default AddProducts;

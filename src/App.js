@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Calculator from './calculator';
+import AddProducts from './addProducts';
 import ClientList from './clientList';
 import OrderDetail from './orderDetail';
 import Login from './Login';
@@ -16,7 +16,7 @@ function App() {
           
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Calculator />} />
+            <Route path="/" element={<AddProducts />} />
             <Route path="/clients" element={<ClientList />} />
             <Route path="/order/:id" element={<OrderDetail />} />
           </Route>
