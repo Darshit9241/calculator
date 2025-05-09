@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AddProducts = () => {
@@ -12,38 +12,39 @@ const AddProducts = () => {
   const [paymentStatus, setPaymentStatus] = useState('pending');
   const [amountPaid, setAmountPaid] = useState('');
   const [billMode, setBillMode] = useState('full');
-  
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   const handleChange = (id, field, value) => {
     const updatedProducts = products.map(product => {
       if (product.id === id) {
         const updatedProduct = { ...product, [field]: value };
-        
+
         // Recalculate total when count or price changes
         if (field === 'count' || field === 'price') {
           const count = updatedProduct.count === '' ? 0 : parseFloat(updatedProduct.count);
           const price = updatedProduct.price === '' ? 0 : parseFloat(updatedProduct.price);
           updatedProduct.total = count * price;
         }
-        
+
         return updatedProduct;
       }
       return product;
     });
-    
+
     setProducts(updatedProducts);
   };
-  
+
   const addProduct = () => {
     const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
     setProducts([...products, { id: newId, name: '', count: '', price: '', total: 0 }]);
   };
-  
+
   const removeProduct = (id) => {
     if (products.length > 1) {
       setProducts(products.filter(product => product.id !== id));
     }
   };
-  
+
   const saveOrder = async () => {
     // Create order data object
     const orderData = {
@@ -56,11 +57,11 @@ const AddProducts = () => {
       timestamp: new Date().getTime(),
       billMode
     };
-    
+
     // Show loading status
     setSaveStatus('Saving order...');
     setIsLoading(true);
-    
+
     try {
       // Save to API instead of localStorage
       const response = await fetch('https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram', {
@@ -70,21 +71,27 @@ const AddProducts = () => {
         },
         body: JSON.stringify(orderData),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to save order');
       }
-      
-      // Show success message
+
+      // Show success message and popup
       setSaveStatus('Order saved successfully!');
-      
-      // Clear status message after 1.5 seconds and navigate
+      setShowSuccessModal(true);
+
+      // Clear status message after 3 seconds
       setTimeout(() => {
         setSaveStatus('');
         setIsLoading(false);
         // Navigate to the client list page
         // navigate('/clients');
-      }, 1500);
+      }, 3000);
+
+      // Auto-hide the success modal after 3 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 3000);
     } catch (error) {
       setSaveStatus(`Error: ${error.message}`);
       setIsLoading(false);
@@ -94,27 +101,146 @@ const AddProducts = () => {
       }, 3000);
     }
   };
-  
+
   const handleLogout = () => {
     // Clear authentication data
     localStorage.removeItem('token');
     localStorage.removeItem('isLoggedIn');
-    
+
     // Redirect to login page
     navigate('/login');
   };
-  
+
   const grandTotal = products.reduce((sum, product) => sum + product.total, 0);
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50">
+      {/* Success Modal Popup */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 relative z-10 transform transition-all duration-300 scale-100 opacity-100" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+            <style>
+              {`
+                @keyframes fadeIn {
+                  from { opacity: 0; transform: scale(0.95); }
+                  to { opacity: 1; transform: scale(1); }
+                }
+                @keyframes confetti {
+                  0% { transform: translateY(0) rotate(0); opacity: 1; }
+                  100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+                }
+                .confetti-container {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  overflow: hidden;
+                  z-index: 0;
+                }
+                .confetti-piece {
+                  position: absolute;
+                  width: 10px;
+                  height: 10px;
+                  background: #ffd700;
+                  top: 0;
+                  opacity: 1;
+                  border-radius: 2px;
+                }
+                .confetti-piece:nth-child(1) {
+                  left: 10%;
+                  animation: confetti 3s ease-in infinite;
+                  animation-delay: 0.1s;
+                  background: #ff4136;
+                }
+                .confetti-piece:nth-child(2) {
+                  left: 20%;
+                  animation: confetti 2.5s ease-in infinite;
+                  animation-delay: 0.3s;
+                  background: #0074d9;
+                }
+                .confetti-piece:nth-child(3) {
+                  left: 30%;
+                  animation: confetti 2.8s ease-in infinite;
+                  animation-delay: 0.5s;
+                  background: #01ff70;
+                }
+                .confetti-piece:nth-child(4) {
+                  left: 40%;
+                  animation: confetti 2.3s ease-in infinite;
+                  animation-delay: 0.7s;
+                  background: #ffdc00;
+                }
+                .confetti-piece:nth-child(5) {
+                  left: 50%;
+                  animation: confetti 2.7s ease-in infinite;
+                  animation-delay: 0.9s;
+                  background: #ff851b;
+                }
+                .confetti-piece:nth-child(6) {
+                  left: 60%;
+                  animation: confetti 3s ease-in infinite;
+                  animation-delay: 1.1s;
+                  background: #b10dc9;
+                }
+                .confetti-piece:nth-child(7) {
+                  left: 70%;
+                  animation: confetti 2.6s ease-in infinite;
+                  animation-delay: 1.3s;
+                  background: #39cccc;
+                }
+                .confetti-piece:nth-child(8) {
+                  left: 80%;
+                  animation: confetti 2.2s ease-in infinite;
+                  animation-delay: 1.5s;
+                  background: #3d9970;
+                }
+                .confetti-piece:nth-child(9) {
+                  left: 90%;
+                  animation: confetti 2.9s ease-in infinite;
+                  animation-delay: 1.7s;
+                  background: #f012be;
+                }
+                `}
+            </style>
+            <div className="confetti-container">
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+            </div>
+            <div className="text-center relative z-10">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">Order Saved Successfully!</h3>
+              <p className="text-gray-500 mb-5">Your order has been saved and is now available in the client list.</p>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:text-sm transition-colors duration-200"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-5xl mx-auto bg-white shadow-xl overflow-hidden transition-all duration-300">
         {/* Header with glass morphism effect */}
         <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 px-6 py-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-white opacity-10 backdrop-blur-xl"></div>
           <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-gradient-to-br from-white to-transparent opacity-10"></div>
           <div className="absolute -left-10 -bottom-16 w-40 h-40 rounded-full bg-indigo-300 opacity-10"></div>
-          
+
           <div className="relative flex flex-col sm:flex-row justify-between items-center gap-4">
             <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -145,7 +271,7 @@ const AddProducts = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="p-6 sm:p-8">
           {/* Client name input with floating label */}
           <div className="mb-6 relative">
@@ -158,41 +284,39 @@ const AddProducts = () => {
                 onChange={(e) => setClientName(e.target.value)}
                 placeholder="Client Name"
               />
-              <label 
-                htmlFor="clientName" 
+              <label
+                htmlFor="clientName"
                 className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-85 top-3 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-85 peer-focus:-translate-y-3 peer-focus:text-indigo-600 bg-white px-1"
               >
                 Client Name
               </label>
             </div>
           </div>
-          
+
           {/* Bill Mode Toggle */}
           <div className="mb-6">
             <div className="flex justify-center space-x-4">
               <button
                 onClick={() => setBillMode('full')}
-                className={`px-6 py-3 rounded-xl transition-all duration-300 ${
-                  billMode === 'full' 
-                    ? 'bg-indigo-600 text-white shadow-md' 
+                className={`px-6 py-3 rounded-xl transition-all duration-300 ${billMode === 'full'
+                    ? 'bg-indigo-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                  }`}
               >
                 Full Bill
               </button>
               <button
                 onClick={() => setBillMode('half')}
-                className={`px-6 py-3 rounded-xl transition-all duration-300 ${
-                  billMode === 'half' 
-                    ? 'bg-indigo-600 text-white shadow-md' 
+                className={`px-6 py-3 rounded-xl transition-all duration-300 ${billMode === 'half'
+                    ? 'bg-indigo-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                  }`}
               >
                 Half Bill
               </button>
             </div>
           </div>
-          
+
           {/* Payment status and amount section with improved design */}
           {billMode === 'full' && (
             <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -225,7 +349,7 @@ const AddProducts = () => {
                   </label>
                 </div>
               </div>
-              
+
               <div className="relative">
                 <input
                   type="number"
@@ -237,8 +361,8 @@ const AddProducts = () => {
                   min="0"
                   step="0.01"
                 />
-                <label 
-                  htmlFor="amountPaid" 
+                <label
+                  htmlFor="amountPaid"
                   className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-85 top-3 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-85 peer-focus:-translate-y-3 peer-focus:text-indigo-600 bg-white px-1"
                 >
                   Amount Paid
@@ -246,13 +370,13 @@ const AddProducts = () => {
               </div>
             </div>
           )}
-          
+
           {/* Products section with improved card design */}
           <div className="bg-white border border-gray-200 rounded-xl shadow-lg mb-8 overflow-hidden">
             <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-800">Product Details</h2>
             </div>
-            
+
             {/* Table header - Only visible on larger screens */}
             <div className="hidden md:grid md:grid-cols-12 md:gap-4 font-semibold text-gray-700 border-b p-4 bg-gray-50">
               {billMode === 'full' && <div className="col-span-3">Product Name</div>}
@@ -261,7 +385,7 @@ const AddProducts = () => {
               <div className={billMode === 'full' ? "col-span-3" : "col-span-2"}>Total</div>
               <div className="col-span-2">Action</div>
             </div>
-            
+
             <div className="divide-y divide-gray-100">
               {products.map(product => (
                 <div key={product.id} className="p-4 md:grid md:grid-cols-12 md:gap-4 md:items-center transition-all duration-200 hover:bg-gray-50">
@@ -320,7 +444,7 @@ const AddProducts = () => {
                       </button>
                     </div>
                   </div>
-                  
+
                   {/* Desktop layout - grid layout */}
                   {billMode === 'full' && (
                     <div className="hidden md:block md:col-span-3">
@@ -372,7 +496,7 @@ const AddProducts = () => {
               ))}
             </div>
           </div>
-          
+
           {/* Actions and total section with glass morphism effect */}
           <div className="mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div className="flex flex-col sm:flex-row gap-3">
@@ -385,7 +509,7 @@ const AddProducts = () => {
                 </svg>
                 Add Product
               </button>
-              
+
               <button
                 className={`flex items-center justify-center p-3.5 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'} text-white rounded-xl transition-all duration-300 shadow-md`}
                 onClick={saveOrder}
@@ -409,7 +533,7 @@ const AddProducts = () => {
                 )}
               </button>
             </div>
-            
+
             <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6 rounded-xl border border-indigo-200 shadow-lg relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-full bg-white opacity-90 backdrop-blur-sm"></div>
               <div className="relative">
@@ -420,7 +544,7 @@ const AddProducts = () => {
                   <span className="font-medium text-gray-700">Grand Total:</span>
                   <span className="font-bold text-xl text-indigo-700">₹ {grandTotal.toFixed(2)}</span>
                 </div>
-                
+
                 {billMode === 'full' && amountPaid && (
                   <div className="mt-3 grid grid-cols-2 gap-3">
                     <div className="p-3 bg-white bg-opacity-80 backdrop-blur-sm rounded-lg">
@@ -435,7 +559,7 @@ const AddProducts = () => {
                     </div>
                   </div>
                 )}
-                
+
                 {billMode === 'full' && (
                   <div className="mt-3 text-center">
                     <span className={`inline-block px-4 py-2 rounded-full ${paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-green-100 text-green-800 border border-green-200'}`}>
@@ -446,7 +570,7 @@ const AddProducts = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Status message with animation */}
           {saveStatus && (
             <div className={`mt-6 p-4 ${saveStatus.includes('Error') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'} rounded-xl text-center animate-pulse border ${saveStatus.includes('Error') ? 'border-red-200' : 'border-green-200'} shadow-md`}>
@@ -467,7 +591,7 @@ const AddProducts = () => {
               )}
             </div>
           )}
-          
+
           {/* Footer */}
           <div className="mt-10 pt-4 border-t border-gray-200 text-center text-gray-500 text-sm">
             <p>Siyaram Lace © {new Date().getFullYear()} | Billing System</p>
