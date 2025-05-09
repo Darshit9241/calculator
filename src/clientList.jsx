@@ -35,6 +35,10 @@ const ClientList = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState(null);
 
+  const [showModalDelete, setShowDeleteModal] = useState(false);
+  const [selectedDeleteClientId, setSelectedDeleteClientId] = useState(null);
+
+
   const [editFormData, setEditFormData] = useState({
     clientName: '',
     amountPaid: '',
@@ -122,10 +126,6 @@ const ClientList = () => {
 
 
   const deleteOrder = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this order?')) {
-      return;
-    }
-
     try {
       await deleteClient(id);
 
@@ -376,14 +376,21 @@ const ClientList = () => {
       <style>{customStyles}</style>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className={`bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 w-[90%] max-w-sm`}>
-            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Confirm Payment</h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">Are you sure you want to mark this payment as cleared?</p>
-            <div className="flex justify-end space-x-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 sm:p-8 transition-all">
+            <div className="flex items-center space-x-3 mb-5">
+              <svg className="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Confirm Payment</h2>
+            </div>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              Are you sure you want to mark this payment as cleared?
+            </p>
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+                className="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
               >
                 Cancel
               </button>
@@ -392,9 +399,45 @@ const ClientList = () => {
                   clearOrderPayment(selectedClientId);
                   setShowModal(false);
                 }}
-                className="px-4 py-2 text-sm bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
+                className="px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
               >
                 Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+      {showModalDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 sm:p-8 transition-all">
+            <div className="flex items-center space-x-3 mb-5">
+              <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Delete Confirmation</h2>
+            </div>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              Are you sure you want to delete this order? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  deleteOrder(selectedDeleteClientId);
+                  setShowDeleteModal(false);
+                }}
+                className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Delete
               </button>
             </div>
           </div>
@@ -1083,7 +1126,11 @@ const ClientList = () => {
                     </div>
                   )}
                   <button
-                    onClick={() => deleteOrder(client.id)}
+                    // onClick={() => deleteOrder(client.id)}
+                    onClick={() => {
+                      setSelectedDeleteClientId(client.id);
+                      setShowDeleteModal(true);
+                    }}
                     className={`py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-red-500 hover:${isDarkMode ? 'bg-red-500/10' : 'bg-red-50'} transition-colors flex items-center justify-center`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
