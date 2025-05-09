@@ -32,6 +32,9 @@ const ClientList = () => {
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [editingClient, setEditingClient] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState(null);
+
   const [editFormData, setEditFormData] = useState({
     clientName: '',
     amountPaid: '',
@@ -53,12 +56,12 @@ const ClientList = () => {
   useEffect(() => {
     // Fetch clients from API when component mounts
     fetchClients();
-    
+
     // Add window resize listener for responsive behavior
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 768);
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -70,23 +73,23 @@ const ClientList = () => {
 
   const applyFilters = () => {
     let filtered = savedClients;
-    
+
     // First filter by payment status
     if (activeFilter === 'pending') {
       filtered = filtered.filter(client => client.paymentStatus !== 'cleared');
     } else if (activeFilter === 'cleared') {
       filtered = filtered.filter(client => client.paymentStatus === 'cleared');
     }
-    
+
     // Then apply search query if it exists
     if (searchQuery.trim() !== '') {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(client => 
-        (client.id && client.id.toLowerCase().includes(query)) || 
+      filtered = filtered.filter(client =>
+        (client.id && client.id.toLowerCase().includes(query)) ||
         (client.clientName && client.clientName.toLowerCase().includes(query))
       );
     }
-    
+
     setFilteredClients(filtered);
   };
 
@@ -113,63 +116,59 @@ const ClientList = () => {
     const options = isSmallScreen
       ? { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Kolkata' }
       : { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' };
-  
+
     return new Date(timestamp).toLocaleString('en-IN', options);
   };
-  
+
 
   const deleteOrder = async (id) => {
     if (!window.confirm('Are you sure you want to delete this order?')) {
       return;
     }
-    
+
     try {
       await deleteClient(id);
-      
+
       // Update the UI by removing the deleted order
       setSavedClients(savedClients.filter(client => client.id !== id));
     } catch (err) {
       setError('Failed to delete order. Please try again.');
       console.error(err);
-      
+
       // Clear error after 3 seconds
       setTimeout(() => setError(''), 3000);
     }
   };
-  
+
   const clearOrderPayment = async (id) => {
-    if (!window.confirm('Mark this order payment as cleared?')) {
-      return;
-    }
-    
     try {
       // Find the client to update
       const clientToUpdate = savedClients.find(client => client.id === id);
       if (!clientToUpdate) return;
-      
+
       const updatedClient = await clearClientPayment(clientToUpdate);
-      
+
       // Update the UI with the updated order
-      setSavedClients(savedClients.map(client => 
+      setSavedClients(savedClients.map(client =>
         client.id === id ? updatedClient : client
       ));
     } catch (err) {
       setError('Failed to clear order payment. Please try again.');
       console.error(err);
-      
+
       // Clear error after 3 seconds
       setTimeout(() => setError(''), 3000);
     }
   };
-  
+
   const deleteAllOrders = async () => {
     if (!window.confirm('Are you sure you want to delete ALL orders? This action cannot be undone.')) {
       return;
     }
-    
+
     setLoading(true);
     let hasError = false;
-    
+
     try {
       // Delete each order one by one
       const deletePromises = savedClients.map(async (client) => {
@@ -182,9 +181,9 @@ const ClientList = () => {
           return false;
         }
       });
-      
+
       await Promise.all(deletePromises);
-      
+
       if (hasError) {
         setError('Some orders could not be deleted. Please refresh and try again.');
       } else {
@@ -235,8 +234,8 @@ const ClientList = () => {
     const { name, value } = e.target;
     // For numeric fields, convert to number
     if (name === 'amountPaid') {
-      setEditFormData({ 
-        ...editFormData, 
+      setEditFormData({
+        ...editFormData,
         [name]: value === '' ? '' : parseFloat(value) || 0,
         // If amount paid equals grand total, automatically set payment status to cleared
         paymentStatus: value !== '' && parseFloat(value) >= (editingClient?.grandTotal || 0) ? 'cleared' : 'pending'
@@ -282,7 +281,7 @@ const ClientList = () => {
 
   const saveProductChanges = () => {
     if (!editingProduct) return;
-    
+
     const updatedProducts = [...editFormData.products];
     updatedProducts[editingProduct.index] = {
       ...editingProduct,
@@ -290,17 +289,17 @@ const ClientList = () => {
       price: productFormData.price,
       count: productFormData.count
     };
-    
+
     // Recalculate the grand total
-    const grandTotal = updatedProducts.reduce((total, product) => 
+    const grandTotal = updatedProducts.reduce((total, product) =>
       total + (parseFloat(product.price) || 0) * (parseFloat(product.count) || 0), 0);
-    
+
     setEditFormData({
       ...editFormData,
       products: updatedProducts,
       grandTotal: grandTotal
     });
-    
+
     // Reset product form
     cancelProductEdit();
   };
@@ -309,14 +308,14 @@ const ClientList = () => {
     if (!window.confirm('Are you sure you want to delete this product?')) {
       return;
     }
-    
+
     const updatedProducts = [...editFormData.products];
     updatedProducts.splice(index, 1);
-    
+
     // Recalculate the grand total
-    const grandTotal = updatedProducts.reduce((total, product) => 
+    const grandTotal = updatedProducts.reduce((total, product) =>
       total + (parseFloat(product.price) || 0) * (parseFloat(product.count) || 0), 0);
-    
+
     setEditFormData({
       ...editFormData,
       products: updatedProducts,
@@ -335,14 +334,14 @@ const ClientList = () => {
 
   const saveClientChanges = async (e) => {
     e.preventDefault();
-    
+
     if (!editingClient) return;
-    
+
     try {
       // Recalculate the grand total
-      const grandTotal = editFormData.products.reduce((total, product) => 
+      const grandTotal = editFormData.products.reduce((total, product) =>
         total + (parseFloat(product.price) || 0) * (parseFloat(product.count) || 0), 0);
-      
+
       // Prepare updated client data
       const updatedClient = {
         ...editingClient,
@@ -352,20 +351,20 @@ const ClientList = () => {
         products: editFormData.products,
         grandTotal: grandTotal
       };
-      
+
       await updateClient(updatedClient);
-      
+
       // Update the UI with the updated client
-      setSavedClients(savedClients.map(client => 
+      setSavedClients(savedClients.map(client =>
         client.id === editingClient.id ? updatedClient : client
       ));
-      
+
       // Close the edit form
       closeEditForm();
     } catch (err) {
       setError('Failed to update client details. Please try again.');
       console.error(err);
-      
+
       // Clear error after 3 seconds
       setTimeout(() => setError(''), 3000);
     }
@@ -375,7 +374,34 @@ const ClientList = () => {
     <div className={`min-h-screen ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-800' : 'bg-gradient-to-br from-gray-100 to-white'} py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200`}>
       {/* Inject custom styles */}
       <style>{customStyles}</style>
-      
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className={`bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 w-[90%] max-w-sm`}>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Confirm Payment</h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">Are you sure you want to mark this payment as cleared?</p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  clearOrderPayment(selectedClientId);
+                  setShowModal(false);
+                }}
+                className="px-4 py-2 text-sm bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className={`backdrop-blur-m`}>
@@ -406,7 +432,7 @@ const ClientList = () => {
             </div>
             <div className="flex gap-3">
               {savedClients.length > 0 && (
-                <button 
+                <button
                   onClick={deleteAllOrders}
                   className="flex items-center justify-center px-4 py-2 bg-red-500/90 hover:bg-red-600 text-white rounded-xl shadow-lg hover:shadow-red-500/30 transition-all duration-200 font-medium"
                 >
@@ -416,8 +442,8 @@ const ClientList = () => {
                   Delete All
                 </button>
               )}
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="flex items-center justify-center px-4 py-2 bg-gradient-to-br from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all duration-200 font-medium"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -427,7 +453,7 @@ const ClientList = () => {
               </Link>
             </div>
           </div>
-          
+
           {/* Mobile Info Dropdown */}
           {isSmallScreen && isInfoOpen && (
             <div className="mb-6 animate-fadeIn">
@@ -470,7 +496,7 @@ const ClientList = () => {
                         <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>All time</p>
                       </div>
                     </div>
-                    
+
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
                       <div className="bg-indigo-500/10 rounded-full p-2 mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -484,7 +510,7 @@ const ClientList = () => {
                         <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Order value</p>
                       </div>
                     </div>
-                    
+
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm transform transition-all hover:scale-105`}>
                       <div className="flex items-center mb-2">
                         <div className="mr-2 p-1.5 rounded-full bg-emerald-500/10">
@@ -498,7 +524,7 @@ const ClientList = () => {
                       <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-emerald-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
                       <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Payments</p>
                     </div>
-                    
+
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
                       <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Pending</p>
                       <p className="text-lg sm:text-2xl font-bold text-amber-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
@@ -547,11 +573,10 @@ const ClientList = () => {
                         setActiveFilter('all');
                         setIsInfoOpen(false);
                       }}
-                      className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-all flex items-center justify-between ${
-                        activeFilter === 'all'
-                          ? `${isDarkMode ? 'bg-emerald-500' : 'bg-emerald-600'} text-white shadow-md shadow-emerald-500/20`
-                          : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
-                      }`}
+                      className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-all flex items-center justify-between ${activeFilter === 'all'
+                        ? `${isDarkMode ? 'bg-emerald-500' : 'bg-emerald-600'} text-white shadow-md shadow-emerald-500/20`
+                        : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
+                        }`}
                     >
                       <div className="flex items-center">
                         <div className={`w-3 h-3 rounded-full ${activeFilter === 'all' ? 'bg-white' : 'bg-emerald-500'} mr-2`}></div>
@@ -564,11 +589,10 @@ const ClientList = () => {
                         setActiveFilter('pending');
                         setIsInfoOpen(false);
                       }}
-                      className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-all flex items-center justify-between ${
-                        activeFilter === 'pending'
-                          ? `${isDarkMode ? 'bg-amber-500' : 'bg-amber-600'} text-white shadow-md shadow-amber-500/20`
-                          : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
-                      }`}
+                      className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-all flex items-center justify-between ${activeFilter === 'pending'
+                        ? `${isDarkMode ? 'bg-amber-500' : 'bg-amber-600'} text-white shadow-md shadow-amber-500/20`
+                        : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
+                        }`}
                     >
                       <div className="flex items-center">
                         <div className={`w-3 h-3 rounded-full ${activeFilter === 'pending' ? 'bg-white' : 'bg-amber-500'} mr-2`}></div>
@@ -581,11 +605,10 @@ const ClientList = () => {
                         setActiveFilter('cleared');
                         setIsInfoOpen(false);
                       }}
-                      className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-all flex items-center justify-between ${
-                        activeFilter === 'cleared'
-                          ? `${isDarkMode ? 'bg-sky-500' : 'bg-sky-600'} text-white shadow-md shadow-sky-500/20`
-                          : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
-                      }`}
+                      className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-all flex items-center justify-between ${activeFilter === 'cleared'
+                        ? `${isDarkMode ? 'bg-sky-500' : 'bg-sky-600'} text-white shadow-md shadow-sky-500/20`
+                        : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
+                        }`}
                     >
                       <div className="flex items-center">
                         <div className={`w-3 h-3 rounded-full ${activeFilter === 'cleared' ? 'bg-white' : 'bg-sky-500'} mr-2`}></div>
@@ -598,7 +621,7 @@ const ClientList = () => {
               )}
             </div>
           )}
-          
+
           {/* Desktop Stats and Filters */}
           {!isSmallScreen && (
             <>
@@ -611,14 +634,14 @@ const ClientList = () => {
                     <div className={`h-0.5 sm:h-1 w-10 sm:w-12 ${isDarkMode ? 'bg-white/20' : 'bg-gray-200'} rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1`}></div>
                     <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>All time</p>
                   </div>
-                  
+
                   <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
                     <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total Amount</p>
                     <p className={`text-lg sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mt-0.5 sm:mt-1 truncate`}>₹{savedClients.reduce((total, client) => total + (client.grandTotal || 0), 0).toFixed(2)}</p>
                     <div className={`h-0.5 sm:h-1 w-10 sm:w-12 ${isDarkMode ? 'bg-white/20' : 'bg-gray-200'} rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1`}></div>
                     <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Order value</p>
                   </div>
-                  
+
                   <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
                     <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Received</p>
                     <p className="text-lg sm:text-2xl font-bold text-emerald-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
@@ -628,7 +651,7 @@ const ClientList = () => {
                     <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-emerald-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
                     <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Payments</p>
                   </div>
-                  
+
                   <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
                     <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Pending</p>
                     <p className="text-lg sm:text-2xl font-bold text-amber-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
@@ -648,33 +671,30 @@ const ClientList = () => {
                 <div className="grid grid-cols-3 gap-2 sm:gap-4">
                   <button
                     onClick={() => setActiveFilter('all')}
-                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${
-                      activeFilter === 'all'
-                        ? `bg-gradient-to-br ${isDarkMode ? 'from-emerald-500 to-teal-600' : 'from-emerald-500 to-teal-600'} text-white shadow-md shadow-emerald-500/20 border border-emerald-400/30`
-                        : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
-                    }`}
+                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${activeFilter === 'all'
+                      ? `bg-gradient-to-br ${isDarkMode ? 'from-emerald-500 to-teal-600' : 'from-emerald-500 to-teal-600'} text-white shadow-md shadow-emerald-500/20 border border-emerald-400/30`
+                      : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
+                      }`}
                   >
                     <span className={`text-xs opacity-80 ${isDarkMode ? 'text-white' : 'text-gray-600'}`}>All Orders</span>
                     <span className={`text-lg mt-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{savedClients.length}</span>
                   </button>
                   <button
                     onClick={() => setActiveFilter('pending')}
-                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${
-                      activeFilter === 'pending'
-                        ? `bg-gradient-to-br ${isDarkMode ? 'from-amber-500 to-orange-600' : 'from-amber-500 to-orange-600'} text-white shadow-md shadow-amber-500/20 border border-amber-400/30`
-                        : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
-                    }`}
+                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${activeFilter === 'pending'
+                      ? `bg-gradient-to-br ${isDarkMode ? 'from-amber-500 to-orange-600' : 'from-amber-500 to-orange-600'} text-white shadow-md shadow-amber-500/20 border border-amber-400/30`
+                      : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
+                      }`}
                   >
                     <span className={`text-xs opacity-80 ${isDarkMode ? 'text-white' : 'text-gray-600'}`}>Pending</span>
                     <span className={`text-lg mt-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{savedClients.filter(client => client.paymentStatus !== 'cleared').length}</span>
                   </button>
                   <button
                     onClick={() => setActiveFilter('cleared')}
-                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${
-                      activeFilter === 'cleared'
-                        ? `bg-gradient-to-br ${isDarkMode ? 'from-sky-500 to-blue-600' : 'from-sky-500 to-blue-600'} text-white shadow-md shadow-sky-500/20 border border-sky-400/30`
-                        : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
-                    }`}
+                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${activeFilter === 'cleared'
+                      ? `bg-gradient-to-br ${isDarkMode ? 'from-sky-500 to-blue-600' : 'from-sky-500 to-blue-600'} text-white shadow-md shadow-sky-500/20 border border-sky-400/30`
+                      : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
+                      }`}
                   >
                     <span className={`text-xs opacity-80 ${isDarkMode ? 'text-white' : 'text-gray-600'}`}>Cleared</span>
                     <span className={`text-lg mt-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{savedClients.filter(client => client.paymentStatus === 'cleared').length}</span>
@@ -700,7 +720,7 @@ const ClientList = () => {
                 className={`w-full pl-10 pr-10 py-3 ${isDarkMode ? 'bg-white/5' : 'bg-white'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} rounded-xl ${isDarkMode ? 'text-white placeholder-slate-400' : 'text-gray-900 placeholder-gray-400'} focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 shadow-sm`}
               />
               {searchQuery && (
-                <button 
+                <button
                   onClick={() => setSearchQuery('')}
                   className="absolute inset-y-0 right-0 flex items-center pr-3"
                 >
@@ -712,7 +732,7 @@ const ClientList = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Error message */}
         {error && (
           <div className="bg-red-900/50 border-l-4 border-red-500 text-red-100 p-4 mb-6 rounded-lg animate-pulse backdrop-blur-sm shadow-xl">
@@ -732,7 +752,7 @@ const ClientList = () => {
               <div className="p-5 bg-gradient-to-r from-slate-700 to-slate-800 border-b border-slate-600/30">
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold text-lg text-white">Edit Client Order</h3>
-                  <button 
+                  <button
                     onClick={closeEditForm}
                     className="text-slate-400 hover:text-white transition-colors"
                   >
@@ -742,15 +762,14 @@ const ClientList = () => {
                   </button>
                 </div>
               </div>
-              
+
               {/* Tabs for General Info and Products */}
               <div className="flex border-b border-slate-700">
                 <button
-                  className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-                    activeTab === 'general'
-                      ? 'bg-white/5 text-white border-b-2 border-emerald-500'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
-                  }`}
+                  className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${activeTab === 'general'
+                    ? 'bg-white/5 text-white border-b-2 border-emerald-500'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    }`}
                   onClick={() => setActiveTab('general')}
                 >
                   <div className="flex items-center justify-center">
@@ -761,11 +780,10 @@ const ClientList = () => {
                   </div>
                 </button>
                 <button
-                  className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-                    activeTab === 'products'
-                      ? 'bg-white/5 text-white border-b-2 border-emerald-500'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
-                  }`}
+                  className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${activeTab === 'products'
+                    ? 'bg-white/5 text-white border-b-2 border-emerald-500'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    }`}
                   onClick={() => setActiveTab('products')}
                 >
                   <div className="flex items-center justify-center">
@@ -779,7 +797,7 @@ const ClientList = () => {
                   </div>
                 </button>
               </div>
-              
+
               <form onSubmit={saveClientChanges}>
                 {activeTab === 'general' ? (
                   <div className="p-5 space-y-4">
@@ -793,12 +811,12 @@ const ClientList = () => {
                         className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-slate-300 mb-1">
                         Amount Paid (₹)
                         <span className="text-xs text-slate-500 ml-2">
-                          Total: ₹{editFormData.products.reduce((total, product) => 
+                          Total: ₹{editFormData.products.reduce((total, product) =>
                             total + (parseFloat(product.price) || 0) * (parseFloat(product.count) || 0), 0).toFixed(2)}
                         </span>
                       </label>
@@ -818,7 +836,7 @@ const ClientList = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-slate-300 mb-1">Payment Status</label>
                       <select
@@ -841,11 +859,11 @@ const ClientList = () => {
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                           </svg>
-                          {editingProduct.index !== undefined && editingProduct.name 
+                          {editingProduct.index !== undefined && editingProduct.name
                             ? `Edit Product: ${editingProduct.name}`
                             : 'Add New Product'}
                         </h4>
-                        
+
                         <div className="space-y-3">
                           <div>
                             <label className="block text-sm font-medium text-slate-300 mb-1">Product Name</label>
@@ -858,7 +876,7 @@ const ClientList = () => {
                               placeholder="Enter product name"
                             />
                           </div>
-                          
+
                           <div className="grid grid-cols-2 gap-3">
                             <div>
                               <label className="block text-sm font-medium text-slate-300 mb-1">Price (₹)</label>
@@ -878,7 +896,7 @@ const ClientList = () => {
                                 />
                               </div>
                             </div>
-                            
+
                             <div>
                               <label className="block text-sm font-medium text-slate-300 mb-1">Quantity</label>
                               <input
@@ -892,7 +910,7 @@ const ClientList = () => {
                               />
                             </div>
                           </div>
-                          
+
                           <div className="flex justify-end gap-2 pt-2">
                             <button
                               type="button"
@@ -923,7 +941,7 @@ const ClientList = () => {
                         Add New Product
                       </button>
                     )}
-                    
+
                     {/* Products list */}
                     <div className="max-h-60 overflow-y-auto pr-1 hide-scrollbar">
                       {editFormData.products.length > 0 ? (
@@ -934,7 +952,7 @@ const ClientList = () => {
                                 <p className="text-white text-sm font-medium truncate text-left">{product.name || 'Unnamed Product'}</p>
                                 <div className="flex items-center mt-1">
                                   <span className="text-xs text-slate-400">
-                                    {product.count} × ₹{typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)} = 
+                                    {product.count} × ₹{typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)} =
                                   </span>
                                   <span className="text-xs text-emerald-400 ml-1 font-medium">
                                     ₹{(product.count * (typeof product.price === 'number' ? product.price : parseFloat(product.price || 0))).toFixed(2)}
@@ -975,7 +993,7 @@ const ClientList = () => {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="p-5 pt-2 border-t border-slate-700/50">
                   <div className="flex justify-end gap-3">
                     <button
@@ -1003,7 +1021,7 @@ const ClientList = () => {
           <div className="flex justify-center items-center py-24">
             <div className="relative">
               <div className="h-20 w-20 rounded-full border-t-4 border-b-4 border-emerald-500 animate-spin"></div>
-              <div className="absolute top-0 left-0 h-20 w-20 rounded-full border-r-4 border-teal-300 animate-spin" style={{animationDirection: 'reverse', animationDuration: '1.5s'}}></div>
+              <div className="absolute top-0 left-0 h-20 w-20 rounded-full border-r-4 border-teal-300 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
             </div>
             <p className="ml-6 text-lg text-slate-300 font-medium">Loading orders...</p>
           </div>
@@ -1015,20 +1033,20 @@ const ClientList = () => {
               </svg>
             </div>
             <h2 className="text-2xl font-semibold text-white mb-3">
-              {savedClients.length === 0 
-                ? 'No orders found' 
+              {savedClients.length === 0
+                ? 'No orders found'
                 : `No ${activeFilter === 'pending' ? 'pending payment' : activeFilter === 'cleared' ? 'cleared payment' : ''} orders found`}
             </h2>
             <p className="text-slate-400 max-w-lg mx-auto mb-8">
-              {savedClients.length === 0 
-                ? 'You haven\'t created any orders yet. Get started by creating your first order.' 
-                : activeFilter !== 'all' 
+              {savedClients.length === 0
+                ? 'You haven\'t created any orders yet. Get started by creating your first order.'
+                : activeFilter !== 'all'
                   ? `There are no orders with ${activeFilter === 'pending' ? 'pending' : 'cleared'} payment status.`
                   : 'You haven\'t created any orders yet.'}
             </p>
             {savedClients.length === 0 && (
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg shadow-lg hover:shadow-emerald-500/30"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -1041,8 +1059,8 @@ const ClientList = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredClients.map((client) => (
-              <div 
-                key={client.id} 
+              <div
+                key={client.id}
                 className={`backdrop-blur-md ${isDarkMode ? 'bg-white/10' : 'bg-white'} rounded-xl shadow-xl overflow-hidden border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} group hover:shadow-emerald-500/10 transition-all duration-300 hover:-translate-y-1`}
               >
                 {/* Card header */}
@@ -1052,11 +1070,10 @@ const ClientList = () => {
                       <h3 className={`font-semibold text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{client.clientName || 'Unnamed Client'}</h3>
                       <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'} mt-1`}>Order ID: {client.id}</p>
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full font-medium ${
-                      client.paymentStatus === 'cleared' 
-                        ? `${isDarkMode ? 'bg-sky-500/20' : 'bg-sky-100'} ${isDarkMode ? 'text-sky-300' : 'text-sky-700'} border ${isDarkMode ? 'border-sky-500/30' : 'border-sky-200'}`
-                        : `${isDarkMode ? 'bg-amber-500/20' : 'bg-amber-100'} ${isDarkMode ? 'text-amber-300' : 'text-amber-700'} border ${isDarkMode ? 'border-amber-500/30' : 'border-amber-200'}`
-                    }`}>
+                    <span className={`text-xs px-3 py-1 rounded-full font-medium ${client.paymentStatus === 'cleared'
+                      ? `${isDarkMode ? 'bg-sky-500/20' : 'bg-sky-100'} ${isDarkMode ? 'text-sky-300' : 'text-sky-700'} border ${isDarkMode ? 'border-sky-500/30' : 'border-sky-200'}`
+                      : `${isDarkMode ? 'bg-amber-500/20' : 'bg-amber-100'} ${isDarkMode ? 'text-amber-300' : 'text-amber-700'} border ${isDarkMode ? 'border-amber-500/30' : 'border-amber-200'}`
+                      }`}>
                       {client.paymentStatus === 'cleared' ? 'Paid' : 'Pending'}
                     </span>
                   </div>
@@ -1064,7 +1081,7 @@ const ClientList = () => {
                     {formatDate(client.timestamp)}
                   </p>
                 </div>
-                
+
                 {/* Card content */}
                 <div className="p-5 space-y-4">
                   {/* Financial summary */}
@@ -1079,16 +1096,15 @@ const ClientList = () => {
                     </div>
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} flex flex-row xs:flex-col justify-between xs:justify-start`}>
                       <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Balance Due:</p>
-                      <p className={`font-medium text-sm sm:text-base ${
-                        ((typeof client.grandTotal === 'number' ? client.grandTotal : 0) - 
+                      <p className={`font-medium text-sm sm:text-base ${((typeof client.grandTotal === 'number' ? client.grandTotal : 0) -
                         (typeof client.amountPaid === 'number' ? client.amountPaid : 0)) <= 0 ? 'text-sky-500' : 'text-amber-500'
-                      }`}>
-                        ₹{((typeof client.grandTotal === 'number' ? client.grandTotal : 0) - 
+                        }`}>
+                        ₹{((typeof client.grandTotal === 'number' ? client.grandTotal : 0) -
                           (typeof client.amountPaid === 'number' ? client.amountPaid : 0)).toFixed(2)}
                       </p>
                     </div>
                   </div>
-                  
+
                   {/* Products section */}
                   <div className={`${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} backdrop-blur-md rounded-lg p-3 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
                     <div className="flex justify-between items-center mb-2 sm:mb-3">
@@ -1097,7 +1113,7 @@ const ClientList = () => {
                         {client.products?.length || 0} items
                       </span>
                     </div>
-                    
+
                     {client.products && client.products.length > 0 ? (
                       <div className="max-h-32 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800 hide-scrollbar">
                         <ul className="space-y-2">
@@ -1118,10 +1134,10 @@ const ClientList = () => {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Card actions */}
                 <div className={`grid grid-cols-4 border-t ${isDarkMode ? 'border-slate-700/50' : 'border-gray-200'}`}>
-                  <button 
+                  <button
                     onClick={() => navigate(`/order/${client.id}`)}
                     className={`py-2 sm:py-3 text-center text-xs sm:text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-gray-600'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'} transition-colors border-r ${isDarkMode ? 'border-slate-700/50' : 'border-gray-200'} flex items-center justify-center`}
                   >
@@ -1131,7 +1147,7 @@ const ClientList = () => {
                     </svg>
                     <span className="hidden xs:inline ml-0.5">View</span>
                   </button>
-                  <button 
+                  <button
                     onClick={() => editClient(client)}
                     className={`py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-indigo-500 hover:${isDarkMode ? 'bg-indigo-500/10' : 'bg-indigo-50'} transition-colors border-r ${isDarkMode ? 'border-slate-700/50' : 'border-gray-200'} flex items-center justify-center`}
                   >
@@ -1141,8 +1157,11 @@ const ClientList = () => {
                     <span className="hidden xs:inline ml-0.5">Edit</span>
                   </button>
                   {client.paymentStatus !== 'cleared' ? (
-                    <button 
-                      onClick={() => clearOrderPayment(client.id)}
+                    <button
+                      onClick={() => {
+                        setSelectedClientId(client.id);
+                        setShowModal(true);
+                      }}
                       className={`py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-emerald-500 hover:${isDarkMode ? 'bg-emerald-500/10' : 'bg-emerald-50'} transition-colors border-r ${isDarkMode ? 'border-slate-700/50' : 'border-gray-200'} flex items-center justify-center`}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1158,7 +1177,7 @@ const ClientList = () => {
                       <span className="hidden xs:inline ml-0.5">Paid</span>
                     </div>
                   )}
-                  <button 
+                  <button
                     onClick={() => deleteOrder(client.id)}
                     className={`py-2 sm:py-3 text-center text-xs sm:text-sm font-medium text-red-500 hover:${isDarkMode ? 'bg-red-500/10' : 'bg-red-50'} transition-colors flex items-center justify-center`}
                   >
