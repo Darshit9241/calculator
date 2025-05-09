@@ -13,7 +13,7 @@ const AddProducts = () => {
   const [amountPaid, setAmountPaid] = useState('');
   const [billMode, setBillMode] = useState('full');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  
+
   // Create refs for input fields
   const clientNameRef = useRef(null);
   const amountPaidRef = useRef(null);
@@ -28,7 +28,7 @@ const AddProducts = () => {
   const handleKeyPress = (e, id, field, isLast = false) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      
+
       // Client name field handling
       if (field === 'clientName') {
         if (billMode === 'full') {
@@ -40,40 +40,40 @@ const AddProducts = () => {
         }
         return;
       }
-      
+
       // Amount paid field handling
       if (field === 'amountPaid') {
         const firstProductId = products[0]?.id;
         productRefs.current[`${firstProductId}_${billMode === 'full' ? 'name' : 'count'}`]?.focus();
         return;
       }
-      
+
       // Product fields handling
       if (id) {
         const currentIndex = products.findIndex(p => p.id === id);
         const currentProduct = products[currentIndex];
-        
+
         // Define field sequence based on bill mode
-        const fieldSequence = billMode === 'full' 
-          ? ['name', 'count', 'price'] 
+        const fieldSequence = billMode === 'full'
+          ? ['name', 'count', 'price']
           : ['count', 'price'];
-        
+
         const currentFieldIndex = fieldSequence.indexOf(field);
         const nextField = fieldSequence[currentFieldIndex + 1];
-        
+
         // Move to next field in same product
         if (nextField) {
           productRefs.current[`${id}_${nextField}`]?.focus();
           return;
         }
-        
+
         // Move to next product
         const nextProduct = products[currentIndex + 1];
         if (nextProduct) {
           productRefs.current[`${nextProduct.id}_${fieldSequence[0]}`]?.focus();
           return;
         }
-        
+
         // If last product and last field, add new product and focus on it
         if (isLast) {
           addProduct();
@@ -195,125 +195,6 @@ const AddProducts = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50">
-      {/* Success Modal Popup */}
-      {showSuccessModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 relative z-10 transform transition-all duration-300 scale-100 opacity-100" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-            <style>
-              {`
-                @keyframes fadeIn {
-                  from { opacity: 0; transform: scale(0.95); }
-                  to { opacity: 1; transform: scale(1); }
-                }
-                @keyframes confetti {
-                  0% { transform: translateY(0) rotate(0); opacity: 1; }
-                  100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
-                }
-                .confetti-container {
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  width: 100%;
-                  height: 100%;
-                  overflow: hidden;
-                  z-index: 0;
-                }
-                .confetti-piece {
-                  position: absolute;
-                  width: 10px;
-                  height: 10px;
-                  background: #ffd700;
-                  top: 0;
-                  opacity: 1;
-                  border-radius: 2px;
-                }
-                .confetti-piece:nth-child(1) {
-                  left: 10%;
-                  animation: confetti 3s ease-in infinite;
-                  animation-delay: 0.1s;
-                  background: #ff4136;
-                }
-                .confetti-piece:nth-child(2) {
-                  left: 20%;
-                  animation: confetti 2.5s ease-in infinite;
-                  animation-delay: 0.3s;
-                  background: #0074d9;
-                }
-                .confetti-piece:nth-child(3) {
-                  left: 30%;
-                  animation: confetti 2.8s ease-in infinite;
-                  animation-delay: 0.5s;
-                  background: #01ff70;
-                }
-                .confetti-piece:nth-child(4) {
-                  left: 40%;
-                  animation: confetti 2.3s ease-in infinite;
-                  animation-delay: 0.7s;
-                  background: #ffdc00;
-                }
-                .confetti-piece:nth-child(5) {
-                  left: 50%;
-                  animation: confetti 2.7s ease-in infinite;
-                  animation-delay: 0.9s;
-                  background: #ff851b;
-                }
-                .confetti-piece:nth-child(6) {
-                  left: 60%;
-                  animation: confetti 3s ease-in infinite;
-                  animation-delay: 1.1s;
-                  background: #b10dc9;
-                }
-                .confetti-piece:nth-child(7) {
-                  left: 70%;
-                  animation: confetti 2.6s ease-in infinite;
-                  animation-delay: 1.3s;
-                  background: #39cccc;
-                }
-                .confetti-piece:nth-child(8) {
-                  left: 80%;
-                  animation: confetti 2.2s ease-in infinite;
-                  animation-delay: 1.5s;
-                  background: #3d9970;
-                }
-                .confetti-piece:nth-child(9) {
-                  left: 90%;
-                  animation: confetti 2.9s ease-in infinite;
-                  animation-delay: 1.7s;
-                  background: #f012be;
-                }
-                `}
-            </style>
-            <div className="confetti-container">
-              <div className="confetti-piece"></div>
-              <div className="confetti-piece"></div>
-              <div className="confetti-piece"></div>
-              <div className="confetti-piece"></div>
-              <div className="confetti-piece"></div>
-              <div className="confetti-piece"></div>
-              <div className="confetti-piece"></div>
-              <div className="confetti-piece"></div>
-              <div className="confetti-piece"></div>
-            </div>
-            <div className="text-center relative z-10">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-                <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">Order Saved Successfully!</h3>
-              <p className="text-gray-500 mb-5">Your order has been saved and is now available in the client list.</p>
-              <button
-                onClick={() => setShowSuccessModal(false)}
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:text-sm transition-colors duration-200"
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="max-w-5xl mx-auto bg-white shadow-xl overflow-hidden transition-all duration-300">
         {/* Header with glass morphism effect */}
         <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 px-6 py-6 relative overflow-hidden">
@@ -381,8 +262,8 @@ const AddProducts = () => {
               <button
                 onClick={() => setBillMode('full')}
                 className={`px-6 py-3 rounded-xl transition-all duration-300 ${billMode === 'full'
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
               >
                 Full Bill
@@ -390,8 +271,8 @@ const AddProducts = () => {
               <button
                 onClick={() => setBillMode('half')}
                 className={`px-6 py-3 rounded-xl transition-all duration-300 ${billMode === 'half'
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
               >
                 Half Bill
@@ -694,6 +575,125 @@ const AddProducts = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal Popup */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 relative z-10 transform transition-all duration-300 scale-100 opacity-100" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+            <style>
+              {`
+                @keyframes fadeIn {
+                  from { opacity: 0; transform: scale(0.95); }
+                  to { opacity: 1; transform: scale(1); }
+                }
+                @keyframes confetti {
+                  0% { transform: translateY(0) rotate(0); opacity: 1; }
+                  100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+                }
+                .confetti-container {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  overflow: hidden;
+                  z-index: 0;
+                }
+                .confetti-piece {
+                  position: absolute;
+                  width: 10px;
+                  height: 10px;
+                  background: #ffd700;
+                  top: 0;
+                  opacity: 1;
+                  border-radius: 2px;
+                }
+                .confetti-piece:nth-child(1) {
+                  left: 10%;
+                  animation: confetti 3s ease-in infinite;
+                  animation-delay: 0.1s;
+                  background: #ff4136;
+                }
+                .confetti-piece:nth-child(2) {
+                  left: 20%;
+                  animation: confetti 2.5s ease-in infinite;
+                  animation-delay: 0.3s;
+                  background: #0074d9;
+                }
+                .confetti-piece:nth-child(3) {
+                  left: 30%;
+                  animation: confetti 2.8s ease-in infinite;
+                  animation-delay: 0.5s;
+                  background: #01ff70;
+                }
+                .confetti-piece:nth-child(4) {
+                  left: 40%;
+                  animation: confetti 2.3s ease-in infinite;
+                  animation-delay: 0.7s;
+                  background: #ffdc00;
+                }
+                .confetti-piece:nth-child(5) {
+                  left: 50%;
+                  animation: confetti 2.7s ease-in infinite;
+                  animation-delay: 0.9s;
+                  background: #ff851b;
+                }
+                .confetti-piece:nth-child(6) {
+                  left: 60%;
+                  animation: confetti 3s ease-in infinite;
+                  animation-delay: 1.1s;
+                  background: #b10dc9;
+                }
+                .confetti-piece:nth-child(7) {
+                  left: 70%;
+                  animation: confetti 2.6s ease-in infinite;
+                  animation-delay: 1.3s;
+                  background: #39cccc;
+                }
+                .confetti-piece:nth-child(8) {
+                  left: 80%;
+                  animation: confetti 2.2s ease-in infinite;
+                  animation-delay: 1.5s;
+                  background: #3d9970;
+                }
+                .confetti-piece:nth-child(9) {
+                  left: 90%;
+                  animation: confetti 2.9s ease-in infinite;
+                  animation-delay: 1.7s;
+                  background: #f012be;
+                }
+                `}
+            </style>
+            <div className="confetti-container">
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+              <div className="confetti-piece"></div>
+            </div>
+            <div className="text-center relative z-10">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">Order Saved Successfully!</h3>
+              <p className="text-gray-500 mb-5">Your order has been saved and is now available in the client list.</p>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:text-sm transition-colors duration-200"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
