@@ -417,7 +417,16 @@ const ClientList = () => {
                 <span className="bg-gradient-to-r from-emerald-500 to-teal-400 inline-block text-transparent bg-clip-text">Siyaram Lace</span>
               </h1>
               <div className="flex items-center gap-2 pl-5">
-                {isSmallScreen && (
+                {isSmallScreen ? (
+                  <button
+                    onClick={() => setIsInfoOpen(!isInfoOpen)}
+                    className={`p-2 rounded-lg ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-100 hover:bg-gray-200'} transition-colors`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                ) : (
                   <button
                     onClick={() => setIsInfoOpen(!isInfoOpen)}
                     className={`p-2 rounded-lg ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-100 hover:bg-gray-200'} transition-colors`}
@@ -454,8 +463,7 @@ const ClientList = () => {
             </div>
           </div>
 
-          {/* Mobile Info Dropdown */}
-          {isSmallScreen && isInfoOpen && (
+          {isInfoOpen && (
             <div className="mb-6 animate-fadeIn">
               {/* Stats Dropdown Button */}
               <button
@@ -482,47 +490,26 @@ const ClientList = () => {
               {/* Stats Content */}
               {isStatsOpen && (
                 <div className={`backdrop-blur-md ${isDarkMode ? 'bg-black/40' : 'bg-white/95'} rounded-b-xl shadow-lg p-4 mb-4 border ${isDarkMode ? 'border-emerald-600/40' : 'border-emerald-100'} border-t-0 animate-fadeIn`}>
-                  <div className="space-y-3">
+                  <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-4 md:gap-3">
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
-                      <div className="bg-blue-500/10 rounded-full p-2 mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      </div>
                       <div className="flex-1">
                         <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total Orders</p>
                         <p className={`text-lg sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mt-0.5 sm:mt-1`}>{savedClients.length}</p>
-                        <div className={`h-0.5 sm:h-1 w-10 sm:w-12 ${isDarkMode ? 'bg-white/20' : 'bg-gray-200'} rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1`}></div>
                         <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>All time</p>
                       </div>
                     </div>
 
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
-                      <div className="bg-indigo-500/10 rounded-full p-2 mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
                       <div className="flex-1">
                         <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total Amount</p>
                         <p className={`text-lg sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mt-0.5 sm:mt-1 truncate`}>₹{savedClients.reduce((total, client) => total + (client.grandTotal || 0), 0).toFixed(2)}</p>
-                        <div className={`h-0.5 sm:h-1 w-10 sm:w-12 ${isDarkMode ? 'bg-white/20' : 'bg-gray-200'} rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1`}></div>
                         <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Order value</p>
                       </div>
                     </div>
 
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm transform transition-all hover:scale-105`}>
-                      <div className="flex items-center mb-2">
-                        <div className="mr-2 p-1.5 rounded-full bg-emerald-500/10">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </div>
-                        <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Received</p>
-                      </div>
                       <p className="text-lg sm:text-2xl font-bold text-emerald-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => total + (client.amountPaid || 0), 0).toFixed(2)}</p>
-                      <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-emerald-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
-                      <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Payments</p>
+                      <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Total Received Payments</p>
                     </div>
 
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
@@ -533,7 +520,6 @@ const ClientList = () => {
                         const pendingAmount = grandTotal - amountPaid;
                         return total + (pendingAmount > 0 ? pendingAmount : 0);
                       }, 0).toFixed(2)}</p>
-                      <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-amber-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
                       <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>To collect</p>
                     </div>
                   </div>
@@ -622,87 +608,6 @@ const ClientList = () => {
             </div>
           )}
 
-          {/* Desktop Stats and Filters */}
-          {!isSmallScreen && (
-            <>
-              {/* Summary stats */}
-              <div className={`backdrop-blur-md ${isDarkMode ? 'bg-white/5' : 'bg-white/80'} rounded-xl shadow-lg p-3 sm:p-5 mb-4 sm:mb-8 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
-                <div className="grid grid-cols-4 gap-2 sm:gap-4">
-                  <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
-                    <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total Orders</p>
-                    <p className={`text-lg sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mt-0.5 sm:mt-1`}>{savedClients.length}</p>
-                    <div className={`h-0.5 sm:h-1 w-10 sm:w-12 ${isDarkMode ? 'bg-white/20' : 'bg-gray-200'} rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1`}></div>
-                    <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>All time</p>
-                  </div>
-
-                  <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
-                    <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total Amount</p>
-                    <p className={`text-lg sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mt-0.5 sm:mt-1 truncate`}>₹{savedClients.reduce((total, client) => total + (client.grandTotal || 0), 0).toFixed(2)}</p>
-                    <div className={`h-0.5 sm:h-1 w-10 sm:w-12 ${isDarkMode ? 'bg-white/20' : 'bg-gray-200'} rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1`}></div>
-                    <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Order value</p>
-                  </div>
-
-                  <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
-                    <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Received</p>
-                    <p className="text-lg sm:text-2xl font-bold text-emerald-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
-                      const amountPaid = typeof client.amountPaid === 'number' ? client.amountPaid : 0;
-                      return total + amountPaid;
-                    }, 0).toFixed(2)}</p>
-                    <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-emerald-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
-                    <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Payments</p>
-                  </div>
-
-                  <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-lg p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
-                    <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Pending</p>
-                    <p className="text-lg sm:text-2xl font-bold text-amber-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
-                      const grandTotal = typeof client.grandTotal === 'number' ? client.grandTotal : 0;
-                      const amountPaid = typeof client.amountPaid === 'number' ? client.amountPaid : 0;
-                      const pendingAmount = grandTotal - amountPaid;
-                      return total + (pendingAmount > 0 ? pendingAmount : 0);
-                    }, 0).toFixed(2)}</p>
-                    <div className="h-0.5 sm:h-1 w-10 sm:w-12 bg-amber-500/20 rounded mt-1.5 sm:mt-2 mb-0.5 sm:mb-1"></div>
-                    <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>To collect</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Filter options */}
-              <div className="mb-6">
-                <div className="grid grid-cols-3 gap-2 sm:gap-4">
-                  <button
-                    onClick={() => setActiveFilter('all')}
-                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${activeFilter === 'all'
-                      ? `bg-gradient-to-br ${isDarkMode ? 'from-emerald-500 to-teal-600' : 'from-emerald-500 to-teal-600'} text-white shadow-md shadow-emerald-500/20 border border-emerald-400/30`
-                      : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
-                      }`}
-                  >
-                    <span className={`text-xs opacity-80 ${isDarkMode ? 'text-white' : 'text-gray-600'}`}>All Orders</span>
-                    <span className={`text-lg mt-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{savedClients.length}</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveFilter('pending')}
-                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${activeFilter === 'pending'
-                      ? `bg-gradient-to-br ${isDarkMode ? 'from-amber-500 to-orange-600' : 'from-amber-500 to-orange-600'} text-white shadow-md shadow-amber-500/20 border border-amber-400/30`
-                      : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
-                      }`}
-                  >
-                    <span className={`text-xs opacity-80 ${isDarkMode ? 'text-white' : 'text-gray-600'}`}>Pending</span>
-                    <span className={`text-lg mt-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{savedClients.filter(client => client.paymentStatus !== 'cleared').length}</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveFilter('cleared')}
-                    className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex flex-col items-center justify-center ${activeFilter === 'cleared'
-                      ? `bg-gradient-to-br ${isDarkMode ? 'from-sky-500 to-blue-600' : 'from-sky-500 to-blue-600'} text-white shadow-md shadow-sky-500/20 border border-sky-400/30`
-                      : `${isDarkMode ? 'bg-white/5' : 'bg-white'} ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} hover:${isDarkMode ? 'bg-white/10' : 'bg-gray-50'}`
-                      }`}
-                  >
-                    <span className={`text-xs opacity-80 ${isDarkMode ? 'text-white' : 'text-gray-600'}`}>Cleared</span>
-                    <span className={`text-lg mt-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{savedClients.filter(client => client.paymentStatus === 'cleared').length}</span>
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
 
           {/* Search bar with improved design */}
           <div className="mb-6">
