@@ -144,7 +144,7 @@ const AddProducts = () => {
 
     try {
       // Save to API instead of localStorage
-      const response = await fetch('https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram', {
+      const response = await fetch('https://6821b4d8259dad2655b0483d.mockapi.io/siyaram', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

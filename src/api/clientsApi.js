@@ -1,5 +1,5 @@
 // Client API service
-const API_URL = 'https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram';
+const API_URL = 'https://6821b4d8259dad2655b0483d.mockapi.io/siyaram';
 
 export const fetchAllClients = async () => {
   try {
