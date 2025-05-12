@@ -38,6 +38,10 @@ const ClientList = () => {
   const [showModalDelete, setShowDeleteModal] = useState(false);
   const [selectedDeleteClientId, setSelectedDeleteClientId] = useState(null);
 
+  // Date range filtering state
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [isDateFilterActive, setIsDateFilterActive] = useState(false);
 
   const [editFormData, setEditFormData] = useState({
     clientName: '',
@@ -73,7 +77,7 @@ const ClientList = () => {
   useEffect(() => {
     // Apply filters when savedClients or activeFilter changes
     applyFilters();
-  }, [savedClients, activeFilter, searchQuery]);
+  }, [savedClients, activeFilter, searchQuery, startDate, endDate, isDateFilterActive]);
 
   const applyFilters = () => {
     let filtered = savedClients;
@@ -83,6 +87,17 @@ const ClientList = () => {
       filtered = filtered.filter(client => client.paymentStatus !== 'cleared');
     } else if (activeFilter === 'cleared') {
       filtered = filtered.filter(client => client.paymentStatus === 'cleared');
+    }
+
+    // Apply date range filter if active
+    if (isDateFilterActive && startDate && endDate) {
+      const startDateTime = new Date(startDate).setHours(0, 0, 0, 0);
+      const endDateTime = new Date(endDate).setHours(23, 59, 59, 999);
+      
+      filtered = filtered.filter(client => {
+        const clientDate = new Date(client.timestamp).getTime();
+        return clientDate >= startDateTime && clientDate <= endDateTime;
+      });
     }
 
     // Then apply search query if it exists
@@ -124,6 +139,20 @@ const ClientList = () => {
     return new Date(timestamp).toLocaleString('en-IN', options);
   };
 
+  const applyDateFilter = () => {
+    if (startDate && endDate) {
+      setIsDateFilterActive(true);
+    } else {
+      setError('Please select both start and end dates');
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  const clearDateFilter = () => {
+    setStartDate('');
+    setEndDate('');
+    setIsDateFilterActive(false);
+  };
 
   const deleteOrder = async (id) => {
     try {
@@ -508,6 +537,58 @@ const ClientList = () => {
 
           {isInfoOpen && (
             <div className="mb-6 animate-fadeIn">
+              {/* Date Range Filter Section */}
+              <div className={`mb-4 p-4 rounded-lg ${isDarkMode ? 'bg-white/5' : 'bg-white'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Date Range Filter
+                    {isDateFilterActive && (
+                      <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-100 text-indigo-700'}`}>
+                        Active
+                      </span>
+                    )}
+                  </h3>
+                  {isDateFilterActive && (
+                    <button
+                      onClick={clearDateFilter}
+                      className={`text-xs ${isDarkMode ? 'text-red-400 hover:text-red-300' : 'text-red-500 hover:text-red-700'} transition-colors`}
+                    >
+                      Clear Filter
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className={`block text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'} mb-1`}>
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className={`w-full px-3 py-2 ${isDarkMode ? 'bg-white/5' : 'bg-white'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} rounded-lg ${isDarkMode ? 'text-white' : 'text-gray-900'} focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'} mb-1`}>
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className={`w-full px-3 py-2 ${isDarkMode ? 'bg-white/5' : 'bg-white'} border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} rounded-lg ${isDarkMode ? 'text-white' : 'text-gray-900'} focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500`}
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={applyDateFilter}
+                  className={`w-full px-4 py-2 text-sm font-medium ${isDarkMode ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-500 hover:bg-indigo-600'} text-white rounded-lg transition-colors`}
+                >
+                  Apply Date Filter
+                </button>
+              </div>
+
               {/* Stats Dropdown Button */}
               <button
                 onClick={() => setIsStatsOpen(!isStatsOpen)}
@@ -518,6 +599,11 @@ const ClientList = () => {
                     <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
                   </svg>
                   <span className="font-medium">Statistics Overview</span>
+                  {isDateFilterActive && (
+                    <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-white/20' : 'bg-white/30'}`}>
+                      Filtered by Date
+                    </span>
+                  )}
                 </div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -537,27 +623,29 @@ const ClientList = () => {
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
                       <div className="flex-1">
                         <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total Orders</p>
-                        <p className={`text-lg sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mt-0.5 sm:mt-1`}>{savedClients.length}</p>
-                        <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>All time</p>
+                        <p className={`text-lg sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mt-0.5 sm:mt-1`}>{filteredClients.length}</p>
+                        <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                          {isDateFilterActive ? 'In selected period' : 'All time'}
+                        </p>
                       </div>
                     </div>
 
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-3 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm flex items-center`}>
                       <div className="flex-1">
                         <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Total Amount</p>
-                        <p className={`text-lg sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mt-0.5 sm:mt-1 truncate`}>₹{savedClients.reduce((total, client) => total + (client.grandTotal || 0), 0).toFixed(2)}</p>
+                        <p className={`text-lg sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mt-0.5 sm:mt-1 truncate`}>₹{filteredClients.reduce((total, client) => total + (client.grandTotal || 0), 0).toFixed(2)}</p>
                         <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Order value</p>
                       </div>
                     </div>
 
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm transform transition-all hover:scale-105`}>
-                      <p className="text-lg sm:text-2xl font-bold text-emerald-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => total + (client.amountPaid || 0), 0).toFixed(2)}</p>
+                      <p className="text-lg sm:text-2xl font-bold text-emerald-500 mt-0.5 sm:mt-1 truncate">₹{filteredClients.reduce((total, client) => total + (client.amountPaid || 0), 0).toFixed(2)}</p>
                       <p className={`text-[9px] sm:text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>Total Received Payments</p>
                     </div>
 
                     <div className={`${isDarkMode ? 'bg-white/5' : 'bg-white'} backdrop-blur-md rounded-xl p-2.5 sm:p-4 border ${isDarkMode ? 'border-white/10' : 'border-gray-200'} shadow-sm`}>
                       <p className={`text-[11px] sm:text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Pending</p>
-                      <p className="text-lg sm:text-2xl font-bold text-amber-500 mt-0.5 sm:mt-1 truncate">₹{savedClients.reduce((total, client) => {
+                      <p className="text-lg sm:text-2xl font-bold text-amber-500 mt-0.5 sm:mt-1 truncate">₹{filteredClients.reduce((total, client) => {
                         const grandTotal = typeof client.grandTotal === 'number' ? client.grandTotal : 0;
                         const amountPaid = typeof client.amountPaid === 'number' ? client.amountPaid : 0;
                         const pendingAmount = grandTotal - amountPaid;
@@ -650,7 +738,6 @@ const ClientList = () => {
               )}
             </div>
           )}
-
 
           {/* Search bar with improved design */}
           <div className="mb-6">
