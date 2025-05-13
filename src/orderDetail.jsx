@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { usePDF } from 'react-to-pdf';
+import { fetchAllClients } from './api'; // Import the API functions
 
 const OrderDetail = () => {
   const [orderData, setOrderData] = useState(null);
@@ -16,14 +17,15 @@ const OrderDetail = () => {
   const fetchOrder = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`https://68187c2b5a4b07b9d1cf4f40.mockapi.io/siyaram/${id}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch order details');
+      // Use the proper API URL from your API module
+      const allClients = await fetchAllClients();
+      const client = allClients.find(client => client.id === id);
+      
+      if (!client) {
+        throw new Error('Order not found');
       }
-
-      const data = await response.json();
-      setOrderData(data);
+      
+      setOrderData(client);
       setError('');
     } catch (err) {
       setError('Error loading order details. Please try again.');
